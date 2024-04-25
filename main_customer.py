@@ -21,47 +21,21 @@ class birthdayWindow:
         return_to_main = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="yellow")
         return_to_main.place(x=0, y=0, height=50, width=50)
 
-        # Create a canvas
-        self.canvas = tk.Canvas(self.root)
-        self.canvas.pack(side="left", fill="both", expand=True)
-
-        # Add a frame inside the canvas
-        scrollable_frame = tk.Frame(self.canvas, bg="#010c48")
-        self.canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-
-        # Add a scrollbar
-        scrollbar = tk.Scrollbar(self.root, orient="vertical", command=self.canvas.yview)
-        scrollbar.pack(side="right", fill="y")
-        self.canvas.configure(yscrollcommand=scrollbar.set)
-
-        # Function to adjust scroll region
-        def configure_scroll_region(event=None):
-            self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-
-        scrollable_frame.bind("<Configure>", configure_scroll_region)
-
         # Birthday bouquet images
-        img1 = tk.PhotoImage(file=r"images\birthday_img1.gif")
-        img2 = tk.PhotoImage(file=r"images\birthday_img2.gif")
+        self.img1 = tk.PhotoImage(file="images/birthday_img1.gif")
+        self.img2 = tk.PhotoImage(file="images/birthday_img2.gif")
 
         # Buttons for bouquets
-        birthday_flower_1 = tk.Button(scrollable_frame, image=img1)
-        birthday_flower_1.grid(row=0, column=0, padx=10, pady=10)
-        birthday_flower_1_label = tk.Label(scrollable_frame, text="Pilihan 1", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_1_label.grid(row=1, column=0, padx=10, pady=10)
+        birthday_flower_1 = tk.Button(self.root, image=self.img1)
+        birthday_flower_1.place(x=100, y=100, height=300, width=300)
+        birthday_flower_1_label = tk.Label(self.root, text="Pilihan 1", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_1_label.place(x=100, y=400, height=30, width=300)
         
-        birthday_flower_2 = tk.Button(scrollable_frame, image=img2)
-        birthday_flower_2.grid(row=0, column=1, padx=20, pady=20)
-        birthday_flower_2_label = tk.Label(scrollable_frame, text="Pilihan 2", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_2_label.grid(row=1, column=1, padx=20, pady=20)
-
-        # Adjust scroll region
-        configure_scroll_region()
-
-        # Configure row and column weights to fill the entire window
-        self.root.grid_rowconfigure(0, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
-
+        birthday_flower_2 = tk.Button(self.root, image=self.img2)
+        birthday_flower_2.place(x=500, y=100, height=300, width=300)
+        birthday_flower_2_label = tk.Label(self.root, text="Pilihan 2", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_2_label.place(x=500, y=400, height=30, width=300)
+        
 class funeralWindow:
     def __init__(self) -> None:
         pass
