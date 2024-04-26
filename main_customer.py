@@ -70,6 +70,8 @@ class customer_UI:
         self.root.title("Kedai Bunga | Developed by Kawabunga")
         self.root.config(bg="white")
         self.birthdayWindow = birthdayWindow(root, self)
+        self.funeralWindow = funeralWindow(root, self)
+        self.graduationWindow = graduationWindow(root, self)
         self.createMainMenu()
 
 #====Main Menu====
@@ -116,9 +118,9 @@ class customer_UI:
         #Categories buttons
         self.birthday_button = tk.Button(root, text="Birthday", command=self.birthdayWindow.birthday_window, bg="pink", fg="white", font=("times new roman", 30), cursor="hand2")
         self.birthday_button.place(x=300, y=420, height=300, width=300)
-        self.funeral_button = tk.Button(root, text="Funeral", bg="pink", fg="white", font=("times new roman", 30), cursor="hand2")
+        self.funeral_button = tk.Button(root, text="Funeral", command=self.funeralWindow.__init__, bg="pink", fg="white", font=("times new roman", 30), cursor="hand2")
         self.funeral_button.place(x=700, y=420, height=300, width=300)
-        self.graduation_button = tk.Button(root, text="", bg="pink", fg="white", font=("times new roman", 30), cursor="hand2")
+        self.graduation_button = tk.Button(root, text="",command=self.graduationWindow.__init__, bg="pink", fg="white", font=("times new roman", 30), cursor="hand2")
         self.graduation_button.place(x=1100, y=420, height=300, width=300)
 
         # Footer
