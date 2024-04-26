@@ -10,32 +10,50 @@ class birthdayWindow:
         self.customer_ui = customer_ui
 
     def birthday_window(self):
-        for widget in self.root.winfo_children():
-            widget.destroy()
+        # Create the main frame
+        main_frame = tk.Frame(self.root)
+        main_frame.pack(fill=tk.BOTH, expand=1)
 
-        # Birthday label
-        birthday_label = tk.Label(self.root, text="Birthday", font=("times new roman", 30), bg="pale violet red")
-        birthday_label.pack(fill=tk.X, side=tk.TOP)
+        # Create a canvas
+        canvas = tk.Canvas(main_frame)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
 
-        # Return to main menu
-        return_to_main = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="yellow")
-        return_to_main.place(x=0, y=0, height=50, width=50)
+        # Add a scrollbar to the canvas
+        scrollbar = tk.Scrollbar(main_frame, orient=tk.VERTICAL, command=canvas.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Birthday bouquet images
+        # Configure the canvas
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        canvas.bind_all("<MouseWheel>", self.customer_ui.mouse_scroll)
+
+        # Create another frame inside the canvas
+        scrollable_frame = tk.Frame(canvas)
+
+        # Add that new frame to a window in the canvas
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+        # Load the birthday bouquet images
         self.img1 = tk.PhotoImage(file="images/birthday_img1.gif")
         self.img2 = tk.PhotoImage(file="images/birthday_img2.gif")
 
-        # Buttons for bouquets
-        birthday_flower_1 = tk.Button(self.root, image=self.img1)
-        birthday_flower_1.place(x=100, y=100, height=300, width=300)
-        birthday_flower_1_label = tk.Label(self.root, text="Pilihan 1", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_1_label.place(x=100, y=400, height=30, width=300)
-        
-        birthday_flower_2 = tk.Button(self.root, image=self.img2)
-        birthday_flower_2.place(x=500, y=100, height=300, width=300)
-        birthday_flower_2_label = tk.Label(self.root, text="Pilihan 2", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_2_label.place(x=500, y=400, height=30, width=300)
+        # Create buttons for the bouquets
+        birthday_flower_1 = tk.Button(scrollable_frame, image=self.img1)
+        birthday_flower_1.grid(row=0, column=0, padx=10, pady=10)
+        birthday_flower_1_label = tk.Label(scrollable_frame, text="Pilihan 1", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_1_label.grid(row=1, column=0, padx=10)
 
+        birthday_flower_2 = tk.Button(scrollable_frame, image=self.img2)
+        birthday_flower_2.grid(row=3, column=0, padx=10, pady=10)
+        birthday_flower_2_label = tk.Label(scrollable_frame, text="Pilihan 2", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_2_label.grid(row=4, column=0, padx=10)
+
+        # Ensure that the images are kept in memory
+        birthday_flower_1.image = self.img1
+        birthday_flower_2.image = self.img2
+
+        # Update the scroll region of the canvas
+        scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.customer_ui.onFrameConfigure(canvas))
 
 class funeralWindow:
     def __init__(self) -> None:
@@ -118,7 +136,14 @@ class customer_UI:
         for widget in self.root.winfo_children():
             widget.destroy()
         self.createMainMenu()
-     
+
+    def onFrameConfigure(self, canvas):
+        '''Reset the scroll region to encompass the inner frame'''
+        canvas.configure(scrollregion=canvas.bbox("all"))
+
+    def mouse_scroll(self, event):
+        canvas = event.widget
+        canvas.yview_scroll(-1 * (event.delta // 120), "units")
 
 root = tk.Tk()
 app = customer_UI(root)
