@@ -33,6 +33,10 @@ class birthdayWindow:
         # Add that new frame to a window in the canvas
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
+        #Return to main menu
+        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
+        returnToMain.place(x=10, y=10, height=50, width=50)
+
         # Load the birthday bouquet images
         self.img1 = tk.PhotoImage(file="images/birthday_img1.gif")
         self.img2 = tk.PhotoImage(file="images/birthday_img2.gif")
@@ -70,8 +74,8 @@ class customer_UI:
         self.root.title("Kedai Bunga | Developed by Kawabunga")
         self.root.config(bg="white")
         self.birthdayWindow = birthdayWindow(root, self)
-        self.funeralWindow = funeralWindow(root, self)
-        self.graduationWindow = graduationWindow(root, self)
+        self.funeralWindow = funeralWindow()
+        self.graduationWindow = graduationWindow()
         self.createMainMenu()
 
 #====Main Menu====
@@ -118,9 +122,9 @@ class customer_UI:
         #Categories buttons
         self.birthday_button = tk.Button(root, text="Birthday", command=self.birthdayWindow.birthday_window, bg="pink", fg="white", font=("times new roman", 30), cursor="hand2")
         self.birthday_button.place(x=300, y=420, height=300, width=300)
-        self.funeral_button = tk.Button(root, text="Funeral", command=self.funeralWindow.__init__, bg="pink", fg="white", font=("times new roman", 30), cursor="hand2")
+        self.funeral_button = tk.Button(root, text="Funeral", command=None, bg="pink", fg="white", font=("times new roman", 30), cursor="hand2")
         self.funeral_button.place(x=700, y=420, height=300, width=300)
-        self.graduation_button = tk.Button(root, text="",command=self.graduationWindow.__init__, bg="pink", fg="white", font=("times new roman", 30), cursor="hand2")
+        self.graduation_button = tk.Button(root, text="",command=None, bg="pink", fg="white", font=("times new roman", 30), cursor="hand2")
         self.graduation_button.place(x=1100, y=420, height=300, width=300)
 
         # Footer
