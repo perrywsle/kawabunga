@@ -15,28 +15,19 @@ class Customer:
 class customerDatabase:
     def __init__(self):
         self.customers = []
-        self.loadFile()
-
-    def loadFile(self):
         self.filename = "data/customer_info.json"
         try:
             with open(self.filename, 'r') as f:
                 data = json.load(f)
                 self.customer_info = []
-                for item in data:
-                    obj = Customer(item['name'], item['contact'], item['email'])
-                    self.customer_info.append(obj)
+                self.customer_info = [Customer(item['name'], item['contact'], item['email']) for item in data]
         except FileNotFoundError:
             self.customer_info = []
 
-    def email_login(self, email):
-        email = email.lower()
-        if email in self.customer_info:
-            return any(user.email == email for user in self.customer_info)
-        
-    def contact_login(self, contact):
-        if contact in self.customer_info:
-            return any(user.contact == contact for user in self.customer_info)
+    def saveCustomerInfo(self):
+        with open(self.filename, 'w') as f:
+            customer_data = [{'name': customer.name, 'contact': customer.contact, 'email': customer.email} for customer in self.customer_info]
+            json.dump(customer_data, f, indent=4)
 
 class Inventory:
     def __init__(self):
@@ -72,6 +63,16 @@ class Inventory:
             messagebox.showinfo(f"Error: {item} not found in inventory.")
         self.save_inventory()
 
+    def delete_item(self, item_name):
+        if self.inventory[item_name] != 0:
+            messagebox.showinfo("Item Not Empty", f"The item '{item_name}' still has quantity. Can't delete.")
+            return
+        confirm = messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete '{item_name}' from the inventory?")
+        if confirm:
+            del self.inventory[item_name]
+            messagebox.showinfo("Success", f"'{item_name}' removed from inventory.")
+            self.save_inventory()
+
     def check_low_stock(self, threshold=10):
         low_stock_items = [item for item, quantity in self.inventory.items() if quantity < threshold]
         if low_stock_items:
@@ -79,7 +80,7 @@ class Inventory:
         else:
             messagebox.showinfo("Low Stock Items", "No items are in low stock.")
 
-class InventoryReport(Inventory):
+class Report(Inventory):
     def generate_inv_report(self):
         # Create a bar plot for inventory items
         items = list(self.inventory.keys())

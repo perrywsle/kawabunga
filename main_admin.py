@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox, ttk
 import subprocess
-from functions import Inventory, InventoryReport, Customer, customerDatabase, PasswordManager
+from functions import Inventory, Report, Customer, customerDatabase, PasswordManager
 from datetime import datetime
 import os
 import glob
@@ -16,7 +16,10 @@ class InventoryWindow(Inventory):
 
     def add_item(self, operation):
         if operation == "new":
-            if (self.new_item_entry.get() and self.new_item_quantity_entry.get()) is not None:
+            if not self.inventory_tree.selection():
+                messagebox.showinfo("Incomplete Input", "Please fill in the item and quantity entry.")
+                return
+            elif (self.new_item_entry.get() and self.new_item_quantity_entry.get()) is not None:
                 item = self.new_item_entry.get()
                 quantity = int(self.new_item_quantity_entry.get())
                 super().add_item(item, quantity)
@@ -40,16 +43,8 @@ class InventoryWindow(Inventory):
         if not self.inventory_tree.selection():
             messagebox.showinfo("No Selection", "Please select an item in the inventory.")
             return
-        item_name = self.inventory_tree.item(self.inventory_tree.selection())['values'][0]
-        if self.inventory[item_name] != 0:
-            messagebox.showinfo("Item Not Empty", f"The item '{item_name}' still has quantity. Can't delete.")
-            return
-        confirm = messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete '{item_name}' from the inventory?")
-        if confirm:
-            del self.inventory[item_name]
-            super().save_inventory()
-            self.update_treeview()
-            messagebox.showinfo("Success", f"'{item_name}' removed from inventory.")
+        super().delete_item(self.selected_item)
+        self.update_treeview() 
 
     def update_treeview(self):
         for i in self.inventory_tree.get_children():
@@ -122,7 +117,7 @@ class InventoryWindow(Inventory):
         returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
         returnToMain.place(x=0, y=0, height=50, width=50)
 
-class AnalyticsWindow(InventoryReport):
+class AnalyticsWindow(Report):
     def __init__(self, root, admin_ui):
         super().__init__()
         self.root = root

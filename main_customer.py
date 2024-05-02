@@ -3,8 +3,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
 from datetime import datetime
-
-
+from functions import customerDatabase, Customer
 
 purchaselistprice=[]
 purchaselist=[]
@@ -14,10 +13,8 @@ flowerprice = {"B001": 499.00, "B002": 379.00,"B003": 1329.00,"B004": 399.00,"B0
     "F021": 259.00,"F022": 499.00, "F023": 389.00, "F024": 559.00,"G001": 359.00,"G002": 169.00, "G003": 229.00,"G004": 699.00,"G005": 69.00, "G006": 179.00,"G007": 269.00,"G008": 129.00,"G009": 479.00,
     "G010": 129.00,"G011": 249.00,"G012": 229.00,"G013": 469.00,"G014": 169.00,"G015": 179.00,"G016": 199.00,"G017": 229.00,"G018": 129.00, "G019": 199.00,"G020": 349.00}
 
-        
 def click(a):
     order_confirmation = messagebox.askyesno("Order confirmation","Are you sure you want to purchase this flower?")
-
     if order_confirmation:
         purchaselist.append(a)
         purchaselistprice.append(flowerprice[a])
@@ -25,193 +22,7 @@ def click(a):
         messagebox.showinfo("Order Purchase", "Order added to cart.")
 
     else:
-        messagebox.showinfo("Order Purchase", "Order canceled.")
-
-class birthdayWindow:
-    def __init__(self, root, customer_ui):
-        self.root = root
-        self.customer_ui = customer_ui
-
-    def birthday_window(self):
-        # Birthday label
-        birthday_label = tk.Label(self.root, text="Birthday", font=("times new roman", 30), bg="pale violet red")
-        birthday_label.pack(fill=tk.X, side=tk.TOP)
-
-        # Create the main frame
-        main_frame = tk.Frame(self.root)
-        main_frame.pack(fill=tk.BOTH, expand=1)
-
-        # Create a canvas
-        canvas = tk.Canvas(main_frame)
-        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
-
-        # Add a scrollbar to the canvas
-        scrollbar = tk.Scrollbar(main_frame, orient=tk.VERTICAL, command=canvas.yview)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-        # Configure the canvas
-        canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-        canvas.bind_all("<MouseWheel>", self.customer_ui.mouse_scroll)
-
-        # Create another frame inside the canvas
-        scrollable_frame = tk.Frame(canvas)
-
-        # Add that new frame to a window in the canvas
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-
-        #Return to main menu
-        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
-        returnToMain.place(x=10, y=10, height=50, width=50)
-    
-        # Birthday bouquet images
-        self.img1a = tk.PhotoImage(file="images/td470.gif")
-        self.img2 = tk.PhotoImage(file="images/bk058.gif")
-        self.img3 = tk.PhotoImage(file="images/bk194.gif")
-        self.img4 = tk.PhotoImage(file="images/bk192.gif")
-        self.img5 = tk.PhotoImage(file="images/bk029.gif")
-        self.img6 = tk.PhotoImage(file="images/bq718.gif")
-        self.img7 = tk.PhotoImage(file="images/bq707.gif")
-        self.img8 = tk.PhotoImage(file="images/td463.gif")
-        self.img9 = tk.PhotoImage(file="images/bq669.gif")
-        self.img10 = tk.PhotoImage(file="images/bk953.gif")
-        self.img11 = tk.PhotoImage(file="images/bk942.gif")
-        self.img12 = tk.PhotoImage(file="images/bk928.gif")
-        self.img13 = tk.PhotoImage(file="images/bk931.gif")
-        self.img14 = tk.PhotoImage(file="images/bq652.gif")
-        self.img15 = tk.PhotoImage(file="images/bk910.gif")
-        self.img16 = tk.PhotoImage(file="images/bq648.gif")
-        self.img17 = tk.PhotoImage(file="images/bk899.gif")
-        self.img18 = tk.PhotoImage(file="images/bq634.gif")
-        self.img19 = tk.PhotoImage(file="images/bq620.gif")
-        self.img20 = tk.PhotoImage(file="images/td441.gif")
-
-        # Buttons for bouquets
-        birthday_flower_1 = tk.Button(scrollable_frame, image=self.img1a, command=lambda: click("B001"))
-        birthday_flower_1.grid(row=0, column=0, padx=10, pady=10)
-        birthday_flower_1_label = tk.Label(scrollable_frame, text="B001 - RM 499.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_1_label.grid(row=1, column=0, padx=10)
-        
-        birthday_flower_2 = tk.Button(scrollable_frame, image=self.img2, command=lambda: click("B002"))
-        birthday_flower_2.grid(row=0, column=3, padx=10, pady=10)
-        birthday_flower_2_label = tk.Label(scrollable_frame, text="B002 - RM 379.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_2_label.grid(row=1, column=3, padx=10)
-
-        birthday_flower_3 = tk.Button(scrollable_frame, image=self.img3, command=lambda: click("B003"))
-        birthday_flower_3.grid(row=0, column=6, padx=10, pady=10)
-        birthday_flower_3_label = tk.Label(scrollable_frame, text="B003 - RM1329.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_3_label.grid(row=1, column=6, padx=10)
-
-        birthday_flower_4 = tk.Button(scrollable_frame, image=self.img4, command=lambda: click("B004"))
-        birthday_flower_4.grid(row=0, column=9, padx=10, pady=10)
-        birthday_flower_4_label = tk.Label(scrollable_frame, text="B004 - RM 399.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_4_label.grid(row=1, column=9, padx=10)
-
-        birthday_flower_5 = tk.Button(scrollable_frame, image=self.img5, command=lambda: click("B005"))
-        birthday_flower_5.grid(row=0, column=12, padx=10, pady=10)
-        birthday_flower_5_label = tk.Label(scrollable_frame, text="B005 - RM 389.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_5_label.grid(row=1, column=12, padx=10)
-
-        birthday_flower_6 = tk.Button(scrollable_frame, image=self.img6, command=lambda: click("B006"))            
-        birthday_flower_6.grid(row=3, column=0, padx=10, pady=10)
-        birthday_flower_6_label = tk.Label(scrollable_frame, text="B006 - RM 399.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_6_label.grid(row=4, column=0, padx=10)
-
-        birthday_flower_7 = tk.Button(scrollable_frame, image=self.img7, command=lambda: click("B007"))
-        birthday_flower_7.grid(row=3, column=3, padx=10, pady=10)
-        birthday_flower_7_label = tk.Label(scrollable_frame, text="B007 - RM 779.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_7_label.grid(row=4, column=3, padx=10)
-
-        birthday_flower_8 = tk.Button(scrollable_frame, image=self.img8, command=lambda: click("B008"))
-        birthday_flower_8.grid(row=3, column=6, padx=10, pady=10)
-        birthday_flower_8_label = tk.Label(scrollable_frame, text="B008 - RM 159.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_8_label.grid(row=4, column=6, padx=10)
-
-        birthday_flower_9 = tk.Button(scrollable_frame, image=self.img9, command=lambda: click("B009"))
-        birthday_flower_9.grid(row=3, column=9, padx=10, pady=10)
-        birthday_flower_9_label = tk.Label(scrollable_frame, text="B009 - RM 189.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_9_label.grid(row=4, column=9, padx=10)
-
-        birthday_flower_10 = tk.Button(scrollable_frame, image=self.img10, command=lambda: click("B010"))
-        birthday_flower_10.grid(row=3, column=12, padx=10, pady=10)
-        birthday_flower_10_label = tk.Label(scrollable_frame, text="B010 - RM 229.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_10_label.grid(row=4, column=12, padx=10)
-
-        birthday_flower_11 = tk.Button(scrollable_frame, image=self.img11, command=lambda: click("B011"))
-        birthday_flower_11.grid(row=6, column=0, padx=10, pady=10)
-        birthday_flower_11_label = tk.Label(scrollable_frame, text="B011 - RM 179.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_11_label.grid(row=7, column=0, padx=10)
-
-        birthday_flower_12 = tk.Button(scrollable_frame, image=self.img12, command=lambda: click("B012"))
-        birthday_flower_12.grid(row=6, column=3, padx=10, pady=10)
-        birthday_flower_12_label = tk.Label(scrollable_frame, text="B012 - RM 399.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_12_label.grid(row=7, column=3, padx=10)
-
-        birthday_flower_13 = tk.Button(scrollable_frame, image=self.img13, command=lambda: click("B013"))
-        birthday_flower_13.grid(row=6, column=6, padx=10, pady=10)
-        birthday_flower_13_label = tk.Label(scrollable_frame, text="B013 - RM 399.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_13_label.grid(row=7, column=6, padx=10)
-
-        birthday_flower_14 = tk.Button(scrollable_frame, image=self.img14, command=lambda: click("B014"))
-        birthday_flower_14.grid(row=6, column=9, padx=10, pady=10)
-        birthday_flower_14_label = tk.Label(scrollable_frame, text="B014 - RM 389.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_14_label.grid(row=7, column=9, padx=10)
-
-        birthday_flower_15 = tk.Button(scrollable_frame, image=self.img15, command=lambda: click("B015"))
-        birthday_flower_15.grid(row=6, column=12, padx=10, pady=10)
-        birthday_flower_15_label = tk.Label(scrollable_frame, text="B015 - RM 179.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_15_label.grid(row=7, column=12, padx=10)
-
-        birthday_flower_16 = tk.Button(scrollable_frame, image=self.img16, command=lambda: click("B016"))
-        birthday_flower_16.grid(row=9, column=0, padx=10, pady=10)
-        birthday_flower_16_label = tk.Label(scrollable_frame, text="B016 - RM 249.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_16_label.grid(row=10, column=0, padx=10)
-
-        birthday_flower_17 = tk.Button(scrollable_frame, image=self.img17, command=lambda: click("B017"))
-        birthday_flower_17.grid(row=9, column=3, padx=10, pady=10)
-        birthday_flower_17_label = tk.Label(scrollable_frame, text="B017 - RM 199.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_17_label.grid(row=10, column=3, padx=10)
-
-        birthday_flower_18 = tk.Button(scrollable_frame, image=self.img18, command=lambda: click("B018"))
-        birthday_flower_18.grid(row=9, column=6, padx=10, pady=10)
-        birthday_flower_18_label = tk.Label(scrollable_frame, text="B018 - RM 229.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_18_label.grid(row=10, column=6, padx=10)
-
-        birthday_flower_19 = tk.Button(scrollable_frame, image=self.img19, command=lambda: click("B019"))
-        birthday_flower_19.grid(row=9, column=9, padx=10, pady=10)
-        birthday_flower_19_label = tk.Label(scrollable_frame, text="B019 - RM 299.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_19_label.grid(row=10, column=9, padx=10)
-
-        birthday_flower_20 = tk.Button(scrollable_frame, image=self.img20, command=lambda: click("B020"))
-        birthday_flower_20.grid(row=9, column=12, padx=10, pady=10)
-        birthday_flower_20_label = tk.Label(scrollable_frame, text="B020 - RM 179.00", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_flower_20_label.grid(row=10, column=12, padx=10)
-
-        # Ensure that the images are kept in memory
-        birthday_flower_1.image = self.img1a
-        birthday_flower_2.image = self.img2
-        birthday_flower_3.image = self.img3
-        birthday_flower_4.image = self.img4
-        birthday_flower_5.image = self.img5
-        birthday_flower_6.image = self.img6
-        birthday_flower_7.image = self.img7
-        birthday_flower_8.image = self.img8
-        birthday_flower_9.image = self.img9
-        birthday_flower_10.image = self.img10
-        birthday_flower_11.image = self.img11
-        birthday_flower_12.image = self.img12
-        birthday_flower_13.image = self.img13
-        birthday_flower_14.image = self.img14
-        birthday_flower_15.image = self.img15
-        birthday_flower_16.image = self.img16
-        birthday_flower_17.image = self.img17
-        birthday_flower_18.image = self.img18
-        birthday_flower_19.image = self.img19
-        birthday_flower_20.image = self.img20
-
-        # Update the scroll region of the canvas
-        scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.customer_ui.onFrameConfigure(canvas))
-
+        messagebox.showinfo("Order Purchase", "Order cancelled.")
 class funeralWindow:
     def __init__(self, root, customer_ui):
         self.root = root
@@ -424,7 +235,190 @@ class funeralWindow:
 
         # Update the scroll region of the canvas
         scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.customer_ui.onFrameConfigure(canvas))
+class birthdayWindow:
+    def __init__(self, root, customer_ui):
+        self.root = root
+        self.customer_ui = customer_ui
 
+    def birthday_window(self):
+        # Birthday label
+        birthday_label = tk.Label(self.root, text="Birthday", font=("times new roman", 30), bg="pale violet red")
+        birthday_label.pack(fill=tk.X, side=tk.TOP)
+
+        # Create the main frame
+        main_frame = tk.Frame(self.root)
+        main_frame.pack(fill=tk.BOTH, expand=1)
+
+        # Create a canvas
+        canvas = tk.Canvas(main_frame)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        # Add a scrollbar to the canvas
+        scrollbar = tk.Scrollbar(main_frame, orient=tk.VERTICAL, command=canvas.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Configure the canvas
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        canvas.bind_all("<MouseWheel>", self.customer_ui.mouse_scroll)
+
+        # Create another frame inside the canvas
+        scrollable_frame = tk.Frame(canvas)
+
+        # Add that new frame to a window in the canvas
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+        #Return to main menu
+        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
+        returnToMain.place(x=10, y=10, height=50, width=50)
+    
+        # Birthday bouquet images
+        self.img1a = tk.PhotoImage(file="images/td470.gif")
+        self.img2 = tk.PhotoImage(file="images/bk058.gif")
+        self.img3 = tk.PhotoImage(file="images/bk194.gif")
+        self.img4 = tk.PhotoImage(file="images/bk192.gif")
+        self.img5 = tk.PhotoImage(file="images/bk029.gif")
+        self.img6 = tk.PhotoImage(file="images/bq718.gif")
+        self.img7 = tk.PhotoImage(file="images/bq707.gif")
+        self.img8 = tk.PhotoImage(file="images/td463.gif")
+        self.img9 = tk.PhotoImage(file="images/bq669.gif")
+        self.img10 = tk.PhotoImage(file="images/bk953.gif")
+        self.img11 = tk.PhotoImage(file="images/bk942.gif")
+        self.img12 = tk.PhotoImage(file="images/bk928.gif")
+        self.img13 = tk.PhotoImage(file="images/bk931.gif")
+        self.img14 = tk.PhotoImage(file="images/bq652.gif")
+        self.img15 = tk.PhotoImage(file="images/bk910.gif")
+        self.img16 = tk.PhotoImage(file="images/bq648.gif")
+        self.img17 = tk.PhotoImage(file="images/bk899.gif")
+        self.img18 = tk.PhotoImage(file="images/bq634.gif")
+        self.img19 = tk.PhotoImage(file="images/bq620.gif")
+        self.img20 = tk.PhotoImage(file="images/td441.gif")
+
+        # Buttons for bouquets
+        birthday_flower_1 = tk.Button(scrollable_frame, image=self.img1a, command=lambda: click("B001"))
+        birthday_flower_1.grid(row=0, column=0, padx=10, pady=10)
+        birthday_flower_1_label = tk.Label(scrollable_frame, text="B001 - RM 499.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_1_label.grid(row=1, column=0, padx=10)
+        
+        birthday_flower_2 = tk.Button(scrollable_frame, image=self.img2, command=lambda: click("B002"))
+        birthday_flower_2.grid(row=0, column=3, padx=10, pady=10)
+        birthday_flower_2_label = tk.Label(scrollable_frame, text="B002 - RM 379.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_2_label.grid(row=1, column=3, padx=10)
+
+        birthday_flower_3 = tk.Button(scrollable_frame, image=self.img3, command=lambda: click("B003"))
+        birthday_flower_3.grid(row=0, column=6, padx=10, pady=10)
+        birthday_flower_3_label = tk.Label(scrollable_frame, text="B003 - RM1329.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_3_label.grid(row=1, column=6, padx=10)
+
+        birthday_flower_4 = tk.Button(scrollable_frame, image=self.img4, command=lambda: click("B004"))
+        birthday_flower_4.grid(row=0, column=9, padx=10, pady=10)
+        birthday_flower_4_label = tk.Label(scrollable_frame, text="B004 - RM 399.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_4_label.grid(row=1, column=9, padx=10)
+
+        birthday_flower_5 = tk.Button(scrollable_frame, image=self.img5, command=lambda: click("B005"))
+        birthday_flower_5.grid(row=0, column=12, padx=10, pady=10)
+        birthday_flower_5_label = tk.Label(scrollable_frame, text="B005 - RM 389.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_5_label.grid(row=1, column=12, padx=10)
+
+        birthday_flower_6 = tk.Button(scrollable_frame, image=self.img6, command=lambda: click("B006"))            
+        birthday_flower_6.grid(row=3, column=0, padx=10, pady=10)
+        birthday_flower_6_label = tk.Label(scrollable_frame, text="B006 - RM 399.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_6_label.grid(row=4, column=0, padx=10)
+
+        birthday_flower_7 = tk.Button(scrollable_frame, image=self.img7, command=lambda: click("B007"))
+        birthday_flower_7.grid(row=3, column=3, padx=10, pady=10)
+        birthday_flower_7_label = tk.Label(scrollable_frame, text="B007 - RM 779.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_7_label.grid(row=4, column=3, padx=10)
+
+        birthday_flower_8 = tk.Button(scrollable_frame, image=self.img8, command=lambda: click("B008"))
+        birthday_flower_8.grid(row=3, column=6, padx=10, pady=10)
+        birthday_flower_8_label = tk.Label(scrollable_frame, text="B008 - RM 159.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_8_label.grid(row=4, column=6, padx=10)
+
+        birthday_flower_9 = tk.Button(scrollable_frame, image=self.img9, command=lambda: click("B009"))
+        birthday_flower_9.grid(row=3, column=9, padx=10, pady=10)
+        birthday_flower_9_label = tk.Label(scrollable_frame, text="B009 - RM 189.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_9_label.grid(row=4, column=9, padx=10)
+
+        birthday_flower_10 = tk.Button(scrollable_frame, image=self.img10, command=lambda: click("B010"))
+        birthday_flower_10.grid(row=3, column=12, padx=10, pady=10)
+        birthday_flower_10_label = tk.Label(scrollable_frame, text="B010 - RM 229.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_10_label.grid(row=4, column=12, padx=10)
+
+        birthday_flower_11 = tk.Button(scrollable_frame, image=self.img11, command=lambda: click("B011"))
+        birthday_flower_11.grid(row=6, column=0, padx=10, pady=10)
+        birthday_flower_11_label = tk.Label(scrollable_frame, text="B011 - RM 179.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_11_label.grid(row=7, column=0, padx=10)
+
+        birthday_flower_12 = tk.Button(scrollable_frame, image=self.img12, command=lambda: click("B012"))
+        birthday_flower_12.grid(row=6, column=3, padx=10, pady=10)
+        birthday_flower_12_label = tk.Label(scrollable_frame, text="B012 - RM 399.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_12_label.grid(row=7, column=3, padx=10)
+
+        birthday_flower_13 = tk.Button(scrollable_frame, image=self.img13, command=lambda: click("B013"))
+        birthday_flower_13.grid(row=6, column=6, padx=10, pady=10)
+        birthday_flower_13_label = tk.Label(scrollable_frame, text="B013 - RM 399.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_13_label.grid(row=7, column=6, padx=10)
+
+        birthday_flower_14 = tk.Button(scrollable_frame, image=self.img14, command=lambda: click("B014"))
+        birthday_flower_14.grid(row=6, column=9, padx=10, pady=10)
+        birthday_flower_14_label = tk.Label(scrollable_frame, text="B014 - RM 389.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_14_label.grid(row=7, column=9, padx=10)
+
+        birthday_flower_15 = tk.Button(scrollable_frame, image=self.img15, command=lambda: click("B015"))
+        birthday_flower_15.grid(row=6, column=12, padx=10, pady=10)
+        birthday_flower_15_label = tk.Label(scrollable_frame, text="B015 - RM 179.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_15_label.grid(row=7, column=12, padx=10)
+
+        birthday_flower_16 = tk.Button(scrollable_frame, image=self.img16, command=lambda: click("B016"))
+        birthday_flower_16.grid(row=9, column=0, padx=10, pady=10)
+        birthday_flower_16_label = tk.Label(scrollable_frame, text="B016 - RM 249.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_16_label.grid(row=10, column=0, padx=10)
+
+        birthday_flower_17 = tk.Button(scrollable_frame, image=self.img17, command=lambda: click("B017"))
+        birthday_flower_17.grid(row=9, column=3, padx=10, pady=10)
+        birthday_flower_17_label = tk.Label(scrollable_frame, text="B017 - RM 199.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_17_label.grid(row=10, column=3, padx=10)
+
+        birthday_flower_18 = tk.Button(scrollable_frame, image=self.img18, command=lambda: click("B018"))
+        birthday_flower_18.grid(row=9, column=6, padx=10, pady=10)
+        birthday_flower_18_label = tk.Label(scrollable_frame, text="B018 - RM 229.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_18_label.grid(row=10, column=6, padx=10)
+
+        birthday_flower_19 = tk.Button(scrollable_frame, image=self.img19, command=lambda: click("B019"))
+        birthday_flower_19.grid(row=9, column=9, padx=10, pady=10)
+        birthday_flower_19_label = tk.Label(scrollable_frame, text="B019 - RM 299.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_19_label.grid(row=10, column=9, padx=10)
+
+        birthday_flower_20 = tk.Button(scrollable_frame, image=self.img20, command=lambda: click("B020"))
+        birthday_flower_20.grid(row=9, column=12, padx=10, pady=10)
+        birthday_flower_20_label = tk.Label(scrollable_frame, text="B020 - RM 179.00", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_flower_20_label.grid(row=10, column=12, padx=10)
+
+        # Ensure that the images are kept in memory
+        birthday_flower_1.image = self.img1a
+        birthday_flower_2.image = self.img2
+        birthday_flower_3.image = self.img3
+        birthday_flower_4.image = self.img4
+        birthday_flower_5.image = self.img5
+        birthday_flower_6.image = self.img6
+        birthday_flower_7.image = self.img7
+        birthday_flower_8.image = self.img8
+        birthday_flower_9.image = self.img9
+        birthday_flower_10.image = self.img10
+        birthday_flower_11.image = self.img11
+        birthday_flower_12.image = self.img12
+        birthday_flower_13.image = self.img13
+        birthday_flower_14.image = self.img14
+        birthday_flower_15.image = self.img15
+        birthday_flower_16.image = self.img16
+        birthday_flower_17.image = self.img17
+        birthday_flower_18.image = self.img18
+        birthday_flower_19.image = self.img19
+        birthday_flower_20.image = self.img20
+
+        # Update the scroll region of the canvas
+        scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.customer_ui.onFrameConfigure(canvas))
 class graduationWindow:
     def __init__(self, root, customer_ui):
         self.root = root
@@ -623,6 +617,41 @@ def checkoutfinal():
         purchaselistprice.clear()
         messagebox.showinfo("Success", "Data cleared successfully!")
 
+class RegistrationWindow(Customer):
+    def __init__(self, root):
+        super().__init__(None, None, None)
+        self.customerDatabase = customerDatabase()
+        self.root = root
+    def input_info(self):
+        self.register_popUp = tk.Toplevel(self.root)
+        self.register_popUp.title("Customer Registration")
+        self.name_label = tk.Label(self.register_popUp, text="Name: ", font=("times new roman", 20))
+        self.name_label.grid(row=0, column=0, padx=10, pady=10)
+        self.name_entry = tk.Entry(self.register_popUp, font=("Arial", 12))
+        self.name_entry.grid(row=0, column=1, padx=10, pady=10)
+        self.contact_label = tk.Label(self.register_popUp, text="Contact: ", font=("times new roman", 20))
+        self.contact_label.grid(row=1, column=0, padx=10, pady=10)
+        self.contact_entry = tk.Entry(self.register_popUp, font=("Arial", 12))
+        self.contact_entry.grid(row=1, column=1, padx=10, pady=10)
+        self.email_label = tk.Label(self.register_popUp, text="Email: ", font=("times new roman", 20))
+        self.email_label.grid(row=2, column=0, padx=10, pady=10)
+        self.email_entry = tk.Entry(self.register_popUp, font=("Arial", 12))
+        self.email_entry.grid(row=2, column=1, padx=10, pady=10)
+        self.submit_button = tk.Button(self.register_popUp, text="Submit", font=("times new roman", 20), command=self.register_info, cursor="hand2")
+        self.submit_button.grid(row=3, column=1, padx=10, pady=10)
+
+    def register_info(self):
+        name = self.name_entry.get()
+        contact = self.contact_entry.get()
+        email = self.email_entry.get()
+        if name in [customer.name for customer in self.customerDatabase.customer_info] or contact in [customer.contact for customer in self.customerDatabase.customer_info] or email in [customer.email for customer in self.customerDatabase.customer_info]:
+            messagebox.showinfo("","Name already recorded.")
+        else:
+            new_customer = Customer(name, contact, email)
+            self.customerDatabase.customer_info.append(new_customer)
+            self.customerDatabase.saveCustomerInfo()
+            messagebox.showinfo("Registration Successful", f"Thank you {name} for registering.")
+            self.register_popUp.destroy()
 class customer_UI:
     def __init__(self, root):
         self.root = root
@@ -632,6 +661,7 @@ class customer_UI:
         self.birthdayWindow = birthdayWindow(root, self)
         self.funeralWindow = funeralWindow(root, self)
         self.graduationWindow = graduationWindow(root, self)
+        self.registrationWindow = RegistrationWindow(root)
         self.createMainMenu()
 
 #====Main Menu====
@@ -666,8 +696,8 @@ class customer_UI:
         # Buttons in Left Menu
         order_button = tk.Button(left_menu, text="\nOrder\n", font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
         order_button.pack(side=tk.TOP, fill=tk.X)
-        category_button = tk.Button(left_menu, text="\nCategory\n", font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
-        category_button.pack(side=tk.TOP, fill=tk.X)
+        register_button = tk.Button(left_menu, text="\nRegister\n", command=self.registrationWindow.input_info, font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
+        register_button.pack(side=tk.TOP, fill=tk.X)
         promotion_button = tk.Button(left_menu, text="\nPromotion\n", font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
         promotion_button.pack(side=tk.TOP, fill=tk.X)
         admin_button = tk.Button(left_menu, text="\nSettings\n", command=self.open_admin_UI, font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
@@ -727,5 +757,4 @@ class customer_UI:
 
 root = tk.Tk()
 app = customer_UI(root)
-
 root.mainloop()
