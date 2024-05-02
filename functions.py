@@ -4,6 +4,7 @@ import json
 import os
 from cryptography.fernet import Fernet
 from tkinter import messagebox
+from datetime import datetime
 
 class Customer:
     def __init__(self, name, contact, email):
@@ -98,7 +99,7 @@ class InventoryReport(Inventory):
             os.makedirs(directory)
 
         # Save the plot as an image or display it
-        plt.savefig(f'{directory}/inventory_report.png')  # Save as an image
+        plt.savefig(f'{directory}/inventory_report_{datetime.now().date()}.png')  # Save as an image
         return plt.show()  # Display the plot (uncomment if needed)
 
 class PasswordManager:

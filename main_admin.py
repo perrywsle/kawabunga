@@ -4,6 +4,8 @@ from tkinter import messagebox, ttk
 import subprocess
 from functions import Inventory, InventoryReport, Customer, customerDatabase, PasswordManager
 from datetime import datetime
+import os
+import glob
 
 class InventoryWindow(Inventory):
     def __init__(self, root, admin_ui):
@@ -83,6 +85,9 @@ class InventoryWindow(Inventory):
 
         inventory_frame = tk.Frame(self.root, bd=20, relief=tk.RIDGE)
         inventory_frame.place(x=0, y=50, height=1000, relwidth=0.9)
+        inventory_title_label = tk.Label(self.root, text="Inventory Management System", font=("times new roman",30), fg="Black", bg="green", compound=CENTER)
+        inventory_title_label.pack(fill=tk.X, side=tk.TOP)
+
         self.inventory_tree = ttk.Treeview(inventory_frame, columns=('Item', 'Quantity'), show='headings')
         self.inventory_tree.column('Item', width=860)
         self.inventory_tree.column('Quantity', width=860)
@@ -115,7 +120,7 @@ class InventoryWindow(Inventory):
         self.check_low_stock_button.pack(fill=tk.X, side=tk.TOP)
 
         returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
-        returnToMain.place(x=10, y=10, height=50, width=50)
+        returnToMain.place(x=0, y=0, height=50, width=50)
 
 class AnalyticsWindow(InventoryReport):
     def __init__(self, root, admin_ui):
@@ -124,28 +129,37 @@ class AnalyticsWindow(InventoryReport):
         self.admin_ui = admin_ui
     def generate_inv_rep(self):
         super().generate_inv_report()
+    def get_latest_image(self):
+        list_of_files = glob.glob('report/*')
+        latest_file = max(list_of_files, key=os.path.getctime)
+        return latest_file
     def analytics_window(self):
         for widget in self.root.winfo_children():
             widget.destroy()
+        analytics_frame = tk.Frame(root, bd=10, relief=tk.RIDGE)
+        analytics_frame.place(x=0, y=50, height=1000, relwidth=0.9)
+        analytics_title_label = tk.Label(root, text="Analytics System", font=("times new roman",30), fg="Black", bg="green", compound=CENTER)
+        analytics_title_label.pack(fill=tk.X, side=tk.TOP)
 
         # Load the image
-        self.img = PhotoImage(file= r"images\flower.gif")
-        # Design
-        title_frame = tk.Frame(self.root, bg="#010c48")
-        title_frame.pack(fill=tk.X)
-        # Create a label for the image
-        img_label = tk.Label(title_frame, image=self.img, bg="#010c48")
-        img_label.grid(row=0, column=0, padx=10, pady=10)
-        # Create a label for the title
-        title = tk.Label(title_frame, text="Analytics", font=("times new roman", 40, "bold"), fg="white", bg="#010c48", compound="left")
-        title.grid(row=0, column=1, padx=10, pady=10)
+        self.img = PhotoImage(file="images/flower.gif")
+        self.inv_report = PhotoImage(file=self.get_latest_image())
+
+        # Latest Report
+        latest_report_label = tk.Label(analytics_frame, text="Latest Inventory Report", font=("times new roman", 25), bg="green")
+        latest_report_label.grid(row=0, column=0, padx=10, pady=10)
+        latest_report = tk.Label(analytics_frame, image=self.inv_report)
+        latest_report.grid(row=0, column=1, padx=10, pady=10)
+
         # Buttons
-        self.inv_report_button = tk.Button(root, text="Inventory Report", command=self.generate_inv_rep, bg="blue", fg="white", font=("Arial", 14))
-        self.inv_report_button.pack(pady=10, padx=20, fill=tk.X)
+        button_frame = tk.Frame(self.root, bd=2, relief=tk.RIDGE)
+        button_frame.place(x=1725, y=50, height=900, relwidth=0.1)
+        self.gen_inv_rep_button = tk.Button(button_frame, text="\nInventory Report\n", font=("times new roman", 20), command=self.generate_inv_rep, bg="light green", fg="black", cursor="hand2")
+        self.gen_inv_rep_button.pack(fill=tk.X, side=tk.TOP)
 
         #Return to main menu
         returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
-        returnToMain.place(x=10, y=10, height=50, width=50)
+        returnToMain.place(x=0, y=0, height=50, width=50)
 
 class admin_UI:
     def __init__(self, root):
@@ -157,16 +171,21 @@ class admin_UI:
         self.analyticsWindow = AnalyticsWindow(root, self)
         self.customer_database = customerDatabase()
         self.password_manager = PasswordManager()
+        self.attempts_left = 3
         self.loginPage()
     
     def loginPage(self):
-        self.login_frame = tk.Frame(self.root, bd=10, relief=tk.FLAT)
-        self.login_frame.pack(side=TOP)
-        self.login_label = tk.Label(self.login_frame, text="\n\n\n\n\nLogin", font=("times new roman", 30))
+        canvas = tk.Canvas(self.root, width=self.root.winfo_screenwidth(), height=self.root.winfo_screenheight())
+        canvas.pack(fill="both", expand=True)
+        canvas.create_image(0, 0, anchor="nw")
+
+        self.login_frame = tk.Frame(canvas, bd=10, relief=tk.FLAT)
+        self.login_frame.place(relx=0.5, rely=0.5, anchor="center")
+        self.login_label = tk.Label(self.login_frame, text="Login", font=("times new roman", 30))
         self.login_label.pack(side=TOP, fill=tk.X)
         self.admin_name_entry = tk.Entry(self.login_frame, font=("times new roman", 30))
         self.admin_name_entry.pack(side=TOP, fill=tk.X)
-        self.admin_password_entry = tk.Entry(self.login_frame, font=("times new roman", 30))
+        self.admin_password_entry = tk.Entry(self.login_frame, show="*", font=(60))
         self.admin_password_entry.pack(side=TOP, fill=tk.X)
         self.login_button = tk.Button(self.login_frame, text="Login", font=("times new roman", 30), command=self.attemptLogin)
         self.login_button.pack(side=BOTTOM)
@@ -176,7 +195,14 @@ class admin_UI:
         admin_password = self.admin_password_entry.get()
         if self.password_manager.check_password(admin_name, admin_password):
             self.createMainMenu()
+            return
+        self.attempts_left -= 1
+        if self.attempts_left > 0:
+            messagebox.showwarning("Login Failed", f"{self.attempts_left} more attempts left.")
+            self.admin_name_entry.delete(0, "end")
+            self.admin_password_entry.delete(0, "end")
         else:
+            messagebox.showerror("Login Failed", "Maximum attempts reached. Closing program.")
             exit()
 
     def createMainMenu(self):
@@ -208,32 +234,32 @@ class admin_UI:
 
         # Left Menu
         left_menu = tk.Frame(self.root, bd=2, relief=tk.RIDGE, bg="white")
-        left_menu.place(x=0, y=102, width=200, height=565)
+        left_menu.place(x=0, y=102, width=200, height=self.root.winfo_screenheight()-202)
         menu_label = tk.Label(left_menu, text="Menu", font=("times new roman", 20), bg="#009688")
         menu_label.pack(side=tk.TOP, fill=tk.X)
 
-        self.menu_img = PhotoImage(file = r"images/flower_2.gif")
+        self.menu_img = PhotoImage(file = "images/flower_2.gif")
 
         # Buttons in Left Menu
         flower_label = tk.Label(left_menu, image=self.menu_img, compound=CENTER)
         flower_label.pack(side=tk.TOP, fill=tk.X)
-        inventory_button = tk.Button(left_menu, text="Inventory Module", command=self.inventoryWindwow.inventory_window, font=("times new roman", 20), bg="blue", fg="white")
+        inventory_button = tk.Button(left_menu, text="\nInventory Module\n", command=self.inventoryWindwow.inventory_window, font=("times new roman", 20), bg="blue", fg="white")
         inventory_button.pack(side=tk.TOP, fill=tk.X)
-        analytics_button = tk.Button(left_menu, text="Analytics", command=self.analyticsWindow.analytics_window, font=("times new roman", 20), bg="blue", fg="white")
+        analytics_button = tk.Button(left_menu, text="\nAnalytics\n", command=self.analyticsWindow.analytics_window, font=("times new roman", 20), bg="blue", fg="white")
         analytics_button.pack(side=tk.TOP, fill=tk.X)
-        order_status_button = tk.Button(left_menu, text="Orders", font=("times new roman", 20), bg="blue", fg="white")
+        order_status_button = tk.Button(left_menu, text="\nOrders\n", font=("times new roman", 20), bg="blue", fg="white")
         order_status_button.pack(side=tk.TOP, fill=tk.X)
-        customer_button = tk.Button(left_menu, text="Customer Page", command=self.open_customer_UI, font=("times new roman", 20), bg="yellow", bd=3, cursor="hand2")
+        customer_button = tk.Button(left_menu, text="\nCustomer Page\n", command=self.open_customer_UI, font=("times new roman", 20), bg="yellow", bd=3, cursor="hand2")
         customer_button.pack(side=tk.BOTTOM, fill=tk.X)
 
     def returnToMain(self):
         for widget in self.root.winfo_children():
             widget.destroy()
         self.createMainMenu()
+
     def open_customer_UI(self):
         subprocess.Popen(["python", "main_customer.py"])
         exit()
-
 
 root = tk.Tk()
 app = admin_UI(root)

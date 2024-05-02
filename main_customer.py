@@ -33,6 +33,9 @@ class birthdayWindow:
         # Add that new frame to a window in the canvas
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
+        self.birthday_label = tk.Label(self.root, text="Birthday", font=("times new roman", 40, "bold"), fg="white", bg="pink")
+        self.birthday_label.place(x=0, y=0, relwidth=1, height=70)
+
         #Return to main menu
         returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
         returnToMain.place(x=10, y=10, height=50, width=50)
