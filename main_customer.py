@@ -652,6 +652,7 @@ class RegistrationWindow(Customer):
             self.customerDatabase.saveCustomerInfo()
             messagebox.showinfo("Registration Successful", f"Thank you {name} for registering.")
             self.register_popUp.destroy()
+            
 class customer_UI:
     def __init__(self, root):
         self.root = root

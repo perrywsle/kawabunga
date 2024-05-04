@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox, ttk
 import subprocess
-from functions import Inventory, Report, Customer, customerDatabase, PasswordManager
+from functions import Inventory, Report, customerDatabase, PasswordManager
 from datetime import datetime
 import os
 import glob
@@ -83,10 +83,10 @@ class InventoryWindow(Inventory):
         inventory_title_label = tk.Label(self.root, text="Inventory Management System", font=("times new roman",30), fg="Black", bg="green", compound=CENTER)
         inventory_title_label.pack(fill=tk.X, side=tk.TOP)
 
-        self.inventory_tree = ttk.Treeview(inventory_frame, columns=('Item', 'Quantity'), show='headings')
+        self.inventory_tree = ttk.Treeview(inventory_frame, style="mystyle.Treeview", columns=('Item', 'Quantity'), show='headings')
         self.inventory_tree.column('Item', width=860)
         self.inventory_tree.column('Quantity', width=860)
-        self.inventory_tree.heading('Item', text='Item')
+        self.inventory_tree.heading('Item', text='Flowers')
         self.inventory_tree.heading('Quantity', text='Quantity')
         self.inventory_tree.pack(fill=tk.X, side=tk.LEFT)
         self.inventory_tree.bind('<<TreeviewSelect>>', self.on_tree_select)
@@ -258,4 +258,9 @@ class admin_UI:
 
 root = tk.Tk()
 app = admin_UI(root)
+style = ttk.Style(root)
+style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=("times new roman", 20))
+style.configure("mystyle.Treeview.Heading", font=("times new roman", 30,"bold"))
+style.configure("mystyle.Treeview", rowheight=50)
+style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})])
 root.mainloop()
