@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox, ttk
 import subprocess
-from functions import Inventory, Report, customerDatabase, PasswordManager
+from functions import *
 from datetime import datetime
 import os
 import glob
@@ -16,10 +16,10 @@ class InventoryWindow(Inventory):
 
     def add_item(self, operation):
         if operation == "new":
-            if not self.inventory_tree.selection():
+            if (self.new_item_entry.get() or self.new_item_quantity_entry.get()) is None:
                 messagebox.showinfo("Incomplete Input", "Please fill in the item and quantity entry.")
                 return
-            elif (self.new_item_entry.get() and self.new_item_quantity_entry.get()) is not None:
+            else:
                 item = self.new_item_entry.get()
                 quantity = int(self.new_item_quantity_entry.get())
                 super().add_item(item, quantity)
@@ -30,7 +30,6 @@ class InventoryWindow(Inventory):
         self.update_treeview()
         self.new_item_entry.delete(0, 'end')
         self.new_item_quantity_entry.delete(0, 'end')
-        self.popUp.destroy()
 
     def remove_item(self):
         quantity = int(self.quantity_entry.get())
