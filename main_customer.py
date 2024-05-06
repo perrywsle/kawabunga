@@ -616,10 +616,8 @@ def checkoutfinal():
         purchaselist.clear()
         purchaselistprice.clear()
         messagebox.showinfo("Success", "Data cleared successfully!")
-
 class RegistrationWindow(Customer):
     def __init__(self, root):
-        super().__init__(None, None, None)
         self.customerDatabase = customerDatabase()
         self.root = root
     def input_info(self):
@@ -637,7 +635,7 @@ class RegistrationWindow(Customer):
         self.email_label.grid(row=2, column=0, padx=10, pady=10)
         self.email_entry = tk.Entry(self.register_popUp, font=("Arial", 12))
         self.email_entry.grid(row=2, column=1, padx=10, pady=10)
-        self.submit_button = tk.Button(self.register_popUp, text="Submit", font=("times new roman", 20), command=self.register_info, cursor="hand2")
+        self.submit_button = tk.Button(self.register_popUp, text="Register", font=("times new roman", 20), command=self.register_info, cursor="hand2")
         self.submit_button.grid(row=3, column=1, padx=10, pady=10)
 
     def register_info(self):
@@ -669,25 +667,38 @@ class customer_UI:
     def createMainMenu(self):
         # Title Label
         self.title_label = tk.Label(self.root, text="Kedai Bunga", font=("times new roman", 40, "bold"), fg="white", bg="pink")
-        self.title_label.place(x=0, y=0, relwidth=1, height=70)
-
-        # Log Out Button (myb change to contact smth like that)
-        self.logout_button = tk.Button(self.root, text="Log Out", font=("times new roman", 15, "bold"), bg="yellow", compound=tk.CENTER, cursor="hand2")
-        self.logout_button.place(x=1770, y=0, height=70, width=150)
+        self.title_label.place(x=0, 
+                               y=0, 
+                               relwidth=1, 
+                               height=self.root.winfo_screenheight()*0.07)
 
         # Clock Label
         current_date = datetime.now().date()
         current_time = datetime.now().time()
-        self.clock_label = tk.Label(self.root, text=f"{current_date} | {current_time.strftime('%H:%M:%S')}", font=("times new roman", 20), bg="pale violet red")
-        self.clock_label.place(x=0, y=70, relwidth=1, height=30)
-
-        # Promotion panel
-        self.promotion_label = tk.Label(self.root, text="Promotion!!", font=("times new roman", 50), bg="hot pink")
-        self.promotion_label.place(x=200, y=102, relwidth=1, height=300)
+        self.clock_label = tk.Label(self.root, text=f"{current_date} | {current_time.strftime('%H:%M')}", font=("times new roman", 20), bg="pale violet red")
+        self.clock_label.place(x=0, 
+                               y=self.root.winfo_screenheight()*0.07, 
+                               relwidth=1, 
+                               height=self.root.winfo_screenheight()*0.08)
 
         # Left Menu
         left_menu = tk.Frame(self.root, bd=2, relief=tk.RIDGE, bg="white")
-        left_menu.place(x=0, y=102, width=200, height=1565)
+        left_menu.place(x=0, 
+                        y=self.root.winfo_screenheight()*0.15, 
+                        relwidth=0.2, 
+                        height=self.root.winfo_screenheight()*0.85)
+        promotion_label = tk.Label(self.root, text="Promotion", font=("times new roman", 40), bg="pink")
+        promotion_label.place(x=self.root.winfo_screenwidth()*0.2, 
+                             y=self.root.winfo_screenheight()*0.15, 
+                             relwidth=0.8, 
+                             height=self.root.winfo_screenheight()*0.15)
+        category_frame = tk.Frame(self.root, bd=2, relief=tk.FLAT)
+        category_frame.place(x=self.root.winfo_screenwidth()*0.2, 
+                             y=self.root.winfo_screenheight()*0.30, 
+                             relwidth=0.8, 
+                             height=self.root.winfo_screenheight()*0.70)
+        #self.promotion_label = tk.Label(self.root, text="Promotion!!", font=("times new roman", 50), bg="hot pink")
+        #self.promotion_label.place(x=self.root.winfo_width()*0.4, y=self.root.winfo_screenheight()*0.15, relwidth=0.8, height=self.root.winfo_screenheight()*0.2)
         menu_label = tk.Label(left_menu, text="Menu", font=("times new roman", 20), bg="pink")
         menu_label.pack(side=tk.TOP, fill=tk.X)
         img_menu = PhotoImage(file = "images/png.gif")
@@ -708,34 +719,34 @@ class customer_UI:
         # Birthday logo
         self.img1 = tk.PhotoImage(file="images/birthdaylogo.gif")
 
-        birthday = tk.Button(self.root, image=self.img1, command=self.birthdayWindow.birthday_window)
-        birthday.place(x=300, y=420, height=300, width=300)
-        birthday_label = tk.Label(self.root, text="Birthday", font=("times new roman", 20), fg="white", bg="pink")
-        birthday_label.place(x=300, y=720, height=30, width=300)
+        birthday = tk.Button(category_frame, image=self.img1, command=self.birthdayWindow.birthday_window)
+        birthday.grid(row=0, column=0, padx=20, pady=20)
+        birthday_label = tk.Label(category_frame, text="Birthday", font=("times new roman", 20), fg="white", bg="pink")
+        birthday_label.grid(row=1, column=0, padx=20, pady=20)
 
         # Funeral logo 
         self.img2 = tk.PhotoImage(file="images/funerallogo.gif")
 
-        funeral = tk.Button(self.root, image=self.img2, command=self.funeralWindow.funeral_window)
-        funeral.place(x=700, y=420, height=300, width=300)
-        funeral_label = tk.Label(self.root, text="Funeral", font=("times new roman", 20), fg="white", bg="pink")
-        funeral_label.place(x=700, y=720, height=30, width=300)
+        funeral = tk.Button(category_frame, image=self.img2, command=self.funeralWindow.funeral_window)
+        funeral.grid(row=0, column=1, padx=20, pady=20)
+        funeral_label = tk.Label(category_frame, text="Funeral", font=("times new roman", 20), fg="white", bg="pink")
+        funeral_label.grid(row=1, column=1, padx=20, pady=20)
 
         # Graduation logo 
         self.img3 = tk.PhotoImage(file="images/graduationlogo.gif")
 
-        graduation = tk.Button(self.root, image=self.img3, command=self.graduationWindow.graduation_window)
-        graduation.place(x=1100, y=420, height=300, width=300)
-        graduation_label = tk.Label(self.root, text="Graduation", font=("times new roman", 20), fg="white", bg="pink")
-        graduation_label.place(x=1100, y=720, height=30, width=300)
+        graduation = tk.Button(category_frame, image=self.img3, command=self.graduationWindow.graduation_window)
+        graduation.grid(row=0, column=2, padx=20, pady=20)
+        graduation_label = tk.Label(category_frame, text="Graduation", font=("times new roman", 20), fg="white", bg="pink")
+        graduation_label.grid(row=1, column=2, padx=20, pady=20)
 
-        checkout= tk.Button(self.root, text="Checkout", font=("times new roman", 10), fg="white", bg="grey", command=checkoutfinal)
-        checkout.place(x=1420, y=600, height=90, width=90)
+        self.check_out_img = tk.PhotoImage(file="images/blank.png")
+        checkout= tk.Button(category_frame, text="Checkout", font=("times new roman", 10), fg="white", bg="grey", image=self.check_out_img, command=checkoutfinal)
+        checkout.grid(row=0, column=3, padx=20, pady=20)
 
         # Footer
         contact_label = tk.Label(self.root, text="For further inquiries, please contact 019-999-9999", font=("times new roman", 20), fg="white", bg="pale violet red")
         contact_label.pack(side=tk.BOTTOM, fill=tk.X)
-        pass
 
 #====Admin UI====
     def open_admin_UI(self):

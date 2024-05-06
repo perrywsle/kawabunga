@@ -206,10 +206,6 @@ class admin_UI:
         self.title_label = tk.Label(self.root, text="Kedai Bunga", font=("times new roman", 40, "bold"), fg="white", bg="pink")
         self.title_label.place(x=0, y=0, relwidth=1, height=70)
 
-        # Log Out Button (myb change to contact smth like that)
-        self.logout_button = tk.Button(self.root, text="Log Out", font=("times new roman", 15, "bold"), bg="yellow", compound=CENTER, cursor="hand2")
-        self.logout_button.place(x=1770, y=0, height=70, width=150)
-
         # Clock Label
         current_date = datetime.now().date()
         current_time = datetime.now().time()
@@ -228,14 +224,19 @@ class admin_UI:
 
         # Left Menu
         left_menu = tk.Frame(self.root, bd=2, relief=tk.RIDGE, bg="white")
-        left_menu.place(x=0, y=102, width=200, height=self.root.winfo_screenheight()-202)
+        left_menu.place(y=102, relwidth=0.2, height=self.root.winfo_screenheight()-202)
+        main_panel = tk.Frame(self.root, bd=2, relief=tk.FLAT)
+        main_panel.place(x=self.root.winfo_screenwidth()*0.2, y=102, relwidth=0.8, height=self.root.winfo_screenheight()-102)
         menu_label = tk.Label(left_menu, text="Menu", font=("times new roman", 20), bg="#009688")
         menu_label.pack(side=tk.TOP, fill=tk.X)
 
-        self.menu_img = PhotoImage(file = "images/flower_2.gif")
+        self.menu_img = tk.PhotoImage(file = "images/flower_2.gif")
+        self.main_panel_img = tk.PhotoImage(file = self.analyticsWindow.get_latest_image())
+        main_panel_label = tk.Label(main_panel, image=self.main_panel_img, compound=tk.CENTER)
+        main_panel_label.pack(side=tk.TOP, fill=tk.X)
 
         # Buttons in Left Menu
-        flower_label = tk.Label(left_menu, image=self.menu_img, compound=CENTER)
+        flower_label = tk.Label(left_menu, image=self.menu_img, compound=tk.CENTER)
         flower_label.pack(side=tk.TOP, fill=tk.X)
         inventory_button = tk.Button(left_menu, text="\nInventory Module\n", command=self.inventoryWindwow.inventory_window, font=("times new roman", 20), bg="blue", fg="white")
         inventory_button.pack(side=tk.TOP, fill=tk.X)
@@ -245,6 +246,8 @@ class admin_UI:
         order_status_button.pack(side=tk.TOP, fill=tk.X)
         customer_button = tk.Button(left_menu, text="\nCustomer Page\n", command=self.open_customer_UI, font=("times new roman", 20), bg="yellow", bd=3, cursor="hand2")
         customer_button.pack(side=tk.BOTTOM, fill=tk.X)
+
+
 
     def returnToMain(self):
         for widget in self.root.winfo_children():
