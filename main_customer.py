@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
 from datetime import datetime
-from functions import customerDatabase, Customer
+from functions import customerDatabase, Customer, PasswordManager
 
 purchaselistprice=[]
 purchaselist=[]
@@ -623,6 +623,13 @@ class RegistrationWindow(Customer):
     def input_info(self):
         self.register_popUp = tk.Toplevel(self.root)
         self.register_popUp.title("Customer Registration")
+        width=400
+        height=300
+        screen_width = self.register_popUp.winfo_screenwidth()
+        screen_height = self.register_popUp.winfo_screenheight()
+        x_coordinate = (screen_width - width) // 2
+        y_coordinate = (screen_height - height) // 2
+        self.register_popUp.geometry(f"{width}x{height}+{x_coordinate}+{y_coordinate}")
         self.name_label = tk.Label(self.register_popUp, text="Name: ", font=("times new roman", 20))
         self.name_label.grid(row=0, column=0, padx=10, pady=10)
         self.name_entry = tk.Entry(self.register_popUp, font=("Arial", 12))
@@ -645,7 +652,7 @@ class RegistrationWindow(Customer):
         if name in [customer.name for customer in self.customerDatabase.customer_info] or contact in [customer.contact for customer in self.customerDatabase.customer_info] or email in [customer.email for customer in self.customerDatabase.customer_info]:
             messagebox.showinfo("","Name already recorded.")
         else:
-            new_customer = Customer(name, contact, email)
+            new_customer = super()(name, contact, email)
             self.customerDatabase.customer_info.append(new_customer)
             self.customerDatabase.saveCustomerInfo()
             messagebox.showinfo("Registration Successful", f"Thank you {name} for registering.")
@@ -661,18 +668,53 @@ class customer_UI:
         self.funeralWindow = funeralWindow(root, self)
         self.graduationWindow = graduationWindow(root, self)
         self.registrationWindow = RegistrationWindow(root)
+        self.password_manager = PasswordManager()
+        self.attempts_left = 3
         self.createMainMenu()
 
-#====Main Menu====
+    def loginPage(self):
+        self.login_popUp = tk.Toplevel(self.root)
+        self.login_popUp.title("Admin Log In")
+        width=600
+        height=300
+        screen_width = self.login_popUp.winfo_screenwidth()
+        screen_height = self.login_popUp.winfo_screenheight()
+        x_coordinate = (screen_width - width) // 2
+        y_coordinate = (screen_height - height) // 2
+        self.login_popUp.geometry(f"{width}x{height}+{x_coordinate}+{y_coordinate}")
+        self.admin_name_label = tk.Label(self.login_popUp, text="Name", font=("times new roman", 30))
+        self.admin_name_label.grid(row=0, column=0, padx=10, pady=10)
+        self.admin_name_entry = tk.Entry(self.login_popUp, font=("times new roman", 20))
+        self.admin_name_entry.grid(row=0, column=1, padx=10, pady=10)
+        self.admin_name_label = tk.Label(self.login_popUp, text="Password", font=("times new roman", 30))
+        self.admin_name_label.grid(row=1, column=0, padx=10, pady=10)
+        self.admin_password_entry = tk.Entry(self.login_popUp, show="*", font=(80))
+        self.admin_password_entry.grid(row=1, column=1, padx=10, pady=10)
+        self.login_button = tk.Button(self.login_popUp, text="Login", font=("times new roman", 30), command=self.attemptLogin)
+        self.login_button.grid(row=2, column=1, padx=10, pady=10)
+
+    def attemptLogin(self):
+        admin_name = self.admin_name_entry.get()
+        admin_password = self.admin_password_entry.get()
+        if self.password_manager.check_password(admin_name, admin_password):
+            subprocess.Popen(["python", "main_admin.py"])
+            exit()
+        self.attempts_left -= 1
+        if self.attempts_left > 0:
+            messagebox.showwarning("Login Failed", f"{self.attempts_left} more attempts left.")
+            self.admin_name_entry.delete(0, "end")
+            self.admin_password_entry.delete(0, "end")
+        else:
+            messagebox.showerror("Login Failed", "Maximum attempts reached. Closing program.")
+            exit()
+
     def createMainMenu(self):
-        # Title Label
         self.title_label = tk.Label(self.root, text="Kedai Bunga", font=("times new roman", 40, "bold"), fg="white", bg="pink")
         self.title_label.place(x=0, 
                                y=0, 
                                relwidth=1, 
                                height=self.root.winfo_screenheight()*0.07)
 
-        # Clock Label
         current_date = datetime.now().date()
         current_time = datetime.now().time()
         self.clock_label = tk.Label(self.root, text=f"{current_date} | {current_time.strftime('%H:%M')}", font=("times new roman", 20), bg="pale violet red")
@@ -681,7 +723,6 @@ class customer_UI:
                                relwidth=1, 
                                height=self.root.winfo_screenheight()*0.08)
 
-        # Left Menu
         left_menu = tk.Frame(self.root, bd=2, relief=tk.RIDGE, bg="white")
         left_menu.place(x=0, 
                         y=self.root.winfo_screenheight()*0.15, 
@@ -712,7 +753,7 @@ class customer_UI:
         register_button.pack(side=tk.TOP, fill=tk.X)
         promotion_button = tk.Button(left_menu, text="\nPromotion\n", font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
         promotion_button.pack(side=tk.TOP, fill=tk.X)
-        admin_button = tk.Button(left_menu, text="\nSettings\n", command=self.open_admin_UI, font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
+        admin_button = tk.Button(left_menu, text="\nSettings\n", command=self.loginPage, font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
         admin_button.pack(side=tk.TOP, fill=tk.X)
 
         #Add images of categories here (refer to birthday window)
@@ -748,12 +789,6 @@ class customer_UI:
         contact_label = tk.Label(self.root, text="For further inquiries, please contact 019-999-9999", font=("times new roman", 20), fg="white", bg="pale violet red")
         contact_label.pack(side=tk.BOTTOM, fill=tk.X)
 
-#====Admin UI====
-    def open_admin_UI(self):
-        subprocess.Popen(["python", "main_admin.py"])
-        exit()
-
-#====Call this to return to Main Menu====
     def returnToMain(self):
         for widget in self.root.winfo_children():
             widget.destroy()

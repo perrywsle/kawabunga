@@ -57,8 +57,15 @@ class InventoryWindow(Inventory):
             return 
         if self.popUp is not None:
             self.popUp.destroy()
-        self.popUp= tk.Toplevel(self.root)
+        self.popUp = tk.Toplevel(self.root)
         self.popUp.title("Inventory Management System")
+        width=200
+        height=200
+        screen_width = self.popUp.winfo_screenwidth()
+        screen_height = self.popUp.winfo_screenheight()
+        x_coordinate = (screen_width - width) // 2
+        y_coordinate = (screen_height - height) // 2
+        self.popUp.geometry(f"{width}x{height}+{x_coordinate}+{y_coordinate}")
         self.quantity_entry_label = tk.Label(self.popUp, text="Quantity: ", font=("times new roman", 20))
         self.quantity_entry_label.pack(pady=10, padx=20, fill=tk.X)
         self.quantity_entry = tk.Entry(self.popUp, font=("Arial", 12))
@@ -83,10 +90,10 @@ class InventoryWindow(Inventory):
         inventory_title_label.pack(fill=tk.X, side=tk.TOP)
 
         self.inventory_tree = ttk.Treeview(inventory_frame, style="mystyle.Treeview", columns=('Item', 'Quantity'), show='headings')
-        self.inventory_tree.column('Item', width=860)
-        self.inventory_tree.column('Quantity', width=860)
-        self.inventory_tree.heading('Item', text='Flowers')
-        self.inventory_tree.heading('Quantity', text='Quantity')
+        self.inventory_tree.column('Item', width=860, anchor=tk.CENTER)
+        self.inventory_tree.column('Quantity', width=860, anchor=tk.CENTER)
+        self.inventory_tree.heading('Item', text='Flowers', anchor=tk.CENTER)
+        self.inventory_tree.heading('Quantity', text='Quantity', anchor=tk.CENTER)
         self.inventory_tree.pack(fill=tk.X, side=tk.LEFT)
         self.inventory_tree.bind('<<TreeviewSelect>>', self.on_tree_select)
 
@@ -123,10 +130,6 @@ class AnalyticsWindow(Report):
         self.admin_ui = admin_ui
     def generate_inv_rep(self):
         super().generate_inv_report()
-    def get_latest_image(self):
-        list_of_files = glob.glob('report/*')
-        latest_file = max(list_of_files, key=os.path.getctime)
-        return latest_file
     def analytics_window(self):
         for widget in self.root.winfo_children():
             widget.destroy()
@@ -137,7 +140,7 @@ class AnalyticsWindow(Report):
 
         # Load the image
         self.img = PhotoImage(file="images/flower.gif")
-        self.inv_report = PhotoImage(file=self.get_latest_image())
+        self.inv_report = PhotoImage(file=super().get_latest_image())
 
         # Latest Report
         latest_report_label = tk.Label(analytics_frame, text="Latest Inventory Report", font=("times new roman", 25), bg="green")
@@ -152,7 +155,7 @@ class AnalyticsWindow(Report):
         self.gen_inv_rep_button.pack(fill=tk.X, side=tk.TOP)
 
         #Return to main menu
-        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
+        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="grey", compound=LEFT)
         returnToMain.place(x=0, y=0, height=50, width=50)
 
 class admin_UI:
@@ -164,70 +167,36 @@ class admin_UI:
         self.inventoryWindwow = InventoryWindow(root, self)
         self.analyticsWindow = AnalyticsWindow(root, self)
         self.customer_database = customerDatabase()
-        self.password_manager = PasswordManager()
-        self.attempts_left = 3
-        self.loginPage()
+        self.createMainMenu()
     
-    def loginPage(self):
-        canvas = tk.Canvas(self.root, width=self.root.winfo_screenwidth(), height=self.root.winfo_screenheight())
-        canvas.pack(fill="both", expand=True)
-        canvas.create_image(0, 0, anchor="nw")
-
-        self.login_frame = tk.Frame(canvas, bd=10, relief=tk.FLAT)
-        self.login_frame.place(relx=0.5, rely=0.5, anchor="center")
-        self.login_label = tk.Label(self.login_frame, text="Login", font=("times new roman", 30))
-        self.login_label.pack(side=TOP, fill=tk.X)
-        self.admin_name_entry = tk.Entry(self.login_frame, font=("times new roman", 30))
-        self.admin_name_entry.pack(side=TOP, fill=tk.X)
-        self.admin_password_entry = tk.Entry(self.login_frame, show="*", font=(60))
-        self.admin_password_entry.pack(side=TOP, fill=tk.X)
-        self.login_button = tk.Button(self.login_frame, text="Login", font=("times new roman", 30), command=self.attemptLogin)
-        self.login_button.pack(side=BOTTOM)
-
-    def attemptLogin(self):
-        admin_name = self.admin_name_entry.get()
-        admin_password = self.admin_password_entry.get()
-        if self.password_manager.check_password(admin_name, admin_password):
-            self.createMainMenu()
-            return
-        self.attempts_left -= 1
-        if self.attempts_left > 0:
-            messagebox.showwarning("Login Failed", f"{self.attempts_left} more attempts left.")
-            self.admin_name_entry.delete(0, "end")
-            self.admin_password_entry.delete(0, "end")
-        else:
-            messagebox.showerror("Login Failed", "Maximum attempts reached. Closing program.")
-            exit()
-
     def createMainMenu(self):
         for widget in self.root.winfo_children():
             widget.destroy()
-        # Title Label
         self.title_label = tk.Label(self.root, text="Kedai Bunga", font=("times new roman", 40, "bold"), fg="white", bg="pink")
-        self.title_label.place(x=0, y=0, relwidth=1, height=70)
+        self.title_label.place(x=0, 
+                               y=0, 
+                               relwidth=1, 
+                               height=self.root.winfo_screenheight()*0.07)
 
         # Clock Label
         current_date = datetime.now().date()
         current_time = datetime.now().time()
-        self.clock_label = tk.Label(self.root, text=f"{current_date} | {current_time.strftime('%H:%M:%S')}", font=("times new roman", 20), bg="pale violet red")
-        self.clock_label.place(x=0, y=70, relwidth=1, height=30)
-
-        # Create Treeview
-        """table_frame = tk.Frame(self.root, bd=100, relief=tk.FLAT)
-        table_frame.place(x=500, y=102, width=1500, height=1565)
-        self.notice_board_table = ttk.Treeview(self.root, columns=('no', 'notice'), show='headings')
-        self.notice_board_table.column('no', width=20)
-        self.notice_board_table.column('notice', width=900)
-        self.notice_board_table.heading('No', text='No')
-        self.notice_board_table.heading('Notice', text='Notice')
-        self.notice_board_table.pack(pady=10, padx=20, fill=tk.X)"""
+        self.clock_label = tk.Label(self.root, text=f"{current_date} | {current_time.strftime('%H:%M')}", font=("times new roman", 20), bg="pale violet red")
+        self.clock_label.place(x=0, 
+                               y=self.root.winfo_screenheight()*0.07, 
+                               relwidth=1, 
+                               height=self.root.winfo_screenheight()*0.08)
 
         # Left Menu
         left_menu = tk.Frame(self.root, bd=2, relief=tk.RIDGE, bg="white")
-        left_menu.place(y=102, relwidth=0.2, height=self.root.winfo_screenheight()-202)
+        left_menu.place(x=0, 
+                        y=self.root.winfo_screenheight()*0.15, 
+                        relwidth=0.2, 
+                        height=self.root.winfo_screenheight()*0.85)
+
         main_panel = tk.Frame(self.root, bd=2, relief=tk.FLAT)
         main_panel.place(x=self.root.winfo_screenwidth()*0.2, y=102, relwidth=0.8, height=self.root.winfo_screenheight()-102)
-        menu_label = tk.Label(left_menu, text="Menu", font=("times new roman", 20), bg="#009688")
+        menu_label = tk.Label(left_menu, text="Menu", font=("times new roman", 20), bg="pink")
         menu_label.pack(side=tk.TOP, fill=tk.X)
 
         self.menu_img = tk.PhotoImage(file = "images/flower_2.gif")
@@ -260,7 +229,7 @@ root = tk.Tk()
 app = admin_UI(root)
 style = ttk.Style(root)
 style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=("times new roman", 20))
-style.configure("mystyle.Treeview.Heading", font=("times new roman", 30,"bold"))
+style.configure("mystyle.Treeview.Heading", font=("times new roman", 30,"bold"), background="light blue", foreground="green")
 style.configure("mystyle.Treeview", rowheight=50)
 style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})])
 root.mainloop()

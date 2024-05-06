@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import json
-import os
+import os, glob
 from cryptography.fernet import Fernet
 from tkinter import messagebox
-from datetime import datetime
+from datetime import datetime, time
+import schedule
 
 class Customer:
     def __init__(self, name, contact, email):
@@ -102,6 +103,11 @@ class Report(Inventory):
         # Save the plot as an image or display it
         plt.savefig(f'{directory}/inventory_report_{datetime.now().date()}.png')  # Save as an image
         return plt.show()  # Display the plot (uncomment if needed)
+    
+    def get_latest_image(self):
+        list_of_files = glob.glob('report/*')
+        latest_file = max(list_of_files, key=os.path.getctime)
+        return latest_file
 
 class PasswordManager:
     def __init__(self, filename='data/passwords.json', keyfile='data/key.key'):
