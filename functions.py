@@ -60,8 +60,6 @@ class Inventory:
                 messagebox.showinfo("Success", f"{quantity} {item} removed from inventory.")
             else:
                 messagebox.showinfo(f"Error: Not enough {item} in inventory.")
-        else:
-            messagebox.showinfo(f"Error: {item} not found in inventory.")
         self.save_inventory()
 
     def delete_item(self, item_name):
@@ -83,7 +81,6 @@ class Inventory:
 
 class Report(Inventory):
     def generate_inv_report(self):
-        # Create a bar plot for inventory items
         items = list(self.inventory.keys())
         quantities = list(self.inventory.values())
 
@@ -92,17 +89,15 @@ class Report(Inventory):
         plt.xlabel('Inventory Items')
         plt.ylabel('Quantity')
         plt.title('Inventory Report')
-        plt.xticks(rotation=45)
+        plt.xticks(rotation=90)
         plt.tight_layout()
 
-        # Ensure the directory exists
         directory = 'report'
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        # Save the plot as an image or display it
-        plt.savefig(f'{directory}/inventory_report_{datetime.now().date()}.png')  # Save as an image
-        return plt.show()  # Display the plot (uncomment if needed)
+        plt.savefig(f'{directory}/inventory_report_{datetime.now().date()}.png') 
+        return plt.show()
     
     def get_latest_image(self):
         list_of_files = glob.glob('report/*')
@@ -148,4 +143,3 @@ class PasswordManager:
         if encrypted_password is None:
             return False
         return self.decrypt_password(encrypted_password) == password
-

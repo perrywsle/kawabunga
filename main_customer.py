@@ -6,7 +6,7 @@ from datetime import datetime
 from functions import customerDatabase, Customer, PasswordManager
 
 purchaselistprice=[]
-purchaselist=[]
+purchaselist=[] #include price in inventory so that when one item is deleted, the whole stuff get deleted
 flowerprice = {"B001": 499.00, "B002": 379.00,"B003": 1329.00,"B004": 399.00,"B005": 389.00,"B006": 399.00,"B007": 779.00,"B008": 159.00,"B009": 189.00,"B010": 229.00,"B011": 179.00,"B012": 399.00,"B013": 399.00,"B014": 389.00, 
     "B015": 179.00,"B016": 249.00,"B017": 199.00,"B018": 229.00,"B019": 299.00,"B020": 179.00, "F001": 439.00,"F002": 289.00,"F003": 699.00, "F004": 639.00,"F005": 439.00,"F006": 219.00, "F007": 269.00,
     "F008": 259.00,"F009": 759.00,"F010": 679.00, "F011": 389.00,"F012": 599.00, "F013": 799.00, "F014": 899.00,"F015": 1129.00,"F016": 399.00,"F017": 359.00,"F018": 499.00,"F019": 399.00,"F020": 499.00,

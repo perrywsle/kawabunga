@@ -4,8 +4,6 @@ from tkinter import messagebox, ttk
 import subprocess
 from functions import *
 from datetime import datetime
-import os
-import glob
 
 class InventoryWindow(Inventory):
     def __init__(self, root, admin_ui):
@@ -185,17 +183,17 @@ class admin_UI:
         self.clock_label.place(x=0, 
                                y=self.root.winfo_screenheight()*0.07, 
                                relwidth=1, 
-                               height=self.root.winfo_screenheight()*0.08)
+                               height=self.root.winfo_screenheight()*0.05)
 
         # Left Menu
         left_menu = tk.Frame(self.root, bd=2, relief=tk.RIDGE, bg="white")
         left_menu.place(x=0, 
-                        y=self.root.winfo_screenheight()*0.15, 
+                        y=self.root.winfo_screenheight()*0.12, 
                         relwidth=0.2, 
-                        height=self.root.winfo_screenheight()*0.85)
+                        height=self.root.winfo_screenheight()*0.88)
 
         main_panel = tk.Frame(self.root, bd=2, relief=tk.FLAT)
-        main_panel.place(x=self.root.winfo_screenwidth()*0.2, y=102, relwidth=0.8, height=self.root.winfo_screenheight()-102)
+        main_panel.place(x=self.root.winfo_screenwidth()*0.2, y=self.root.winfo_screenheight()*0.12, relwidth=0.8, height=self.root.winfo_screenheight()*0.88)
         menu_label = tk.Label(left_menu, text="Menu", font=("times new roman", 20), bg="pink")
         menu_label.pack(side=tk.TOP, fill=tk.X)
 
@@ -207,14 +205,14 @@ class admin_UI:
         # Buttons in Left Menu
         flower_label = tk.Label(left_menu, image=self.menu_img, compound=tk.CENTER)
         flower_label.pack(side=tk.TOP, fill=tk.X)
-        inventory_button = tk.Button(left_menu, text="\nInventory Module\n", command=self.inventoryWindwow.inventory_window, font=("times new roman", 20), bg="blue", fg="white")
+        inventory_button = tk.Button(left_menu, text="\nInventory Module\n", command=self.inventoryWindwow.inventory_window, font=("times new roman", 20),cursor="hand2")
         inventory_button.pack(side=tk.TOP, fill=tk.X)
-        analytics_button = tk.Button(left_menu, text="\nAnalytics\n", command=self.analyticsWindow.analytics_window, font=("times new roman", 20), bg="blue", fg="white")
+        analytics_button = tk.Button(left_menu, text="\nAnalytics\n", command=self.analyticsWindow.analytics_window, font=("times new roman", 20),cursor="hand2")
         analytics_button.pack(side=tk.TOP, fill=tk.X)
-        order_status_button = tk.Button(left_menu, text="\nOrders\n", font=("times new roman", 20), bg="blue", fg="white")
+        order_status_button = tk.Button(left_menu, text="\nOrders\n", font=("times new roman", 20), cursor="hand2")
         order_status_button.pack(side=tk.TOP, fill=tk.X)
-        customer_button = tk.Button(left_menu, text="\nCustomer Page\n", command=self.open_customer_UI, font=("times new roman", 20), bg="yellow", bd=3, cursor="hand2")
-        customer_button.pack(side=tk.BOTTOM, fill=tk.X)
+        customer_button = tk.Button(left_menu, text="\nCustomer Page\n", command=self.open_customer_UI, font=("times new roman", 20), bg="light grey", bd=3, cursor="hand2")
+        customer_button.pack(side=tk.TOP, fill=tk.X)
 
     def returnToMain(self):
         for widget in self.root.winfo_children():
