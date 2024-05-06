@@ -247,8 +247,6 @@ class admin_UI:
         customer_button = tk.Button(left_menu, text="\nCustomer Page\n", command=self.open_customer_UI, font=("times new roman", 20), bg="yellow", bd=3, cursor="hand2")
         customer_button.pack(side=tk.BOTTOM, fill=tk.X)
 
-
-
     def returnToMain(self):
         for widget in self.root.winfo_children():
             widget.destroy()
