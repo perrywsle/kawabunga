@@ -14,13 +14,14 @@ class InventoryWindow(Inventory):
 
     def add_item(self, operation):
         if operation == "new":
-            if (self.new_item_entry.get() or self.new_item_quantity_entry.get()) is None:
-                messagebox.showinfo("Incomplete Input", "Please fill in the item and quantity entry.")
+            if (self.new_item_entry.get() or self.new_item_quantity_entry.get() or self.new_item_price_entry.get()) is None:
+                messagebox.showinfo("Incomplete Input", "Please fill in the item, quantity, and price entries.")
                 return
             else:
-                item = self.new_item_entry.get()
+                flower_name = self.new_item_entry.get()
                 quantity = int(self.new_item_quantity_entry.get())
-                super().add_item(item, quantity)
+                price = float(self.new_item_price_entry.get())
+                super().add_item(flower_name, quantity, price)
         elif operation == None:
             quantity = int(self.quantity_entry.get())
             super().add_item(self.selected_item, quantity)
@@ -28,26 +29,44 @@ class InventoryWindow(Inventory):
         self.update_treeview()
         self.new_item_entry.delete(0, 'end')
         self.new_item_quantity_entry.delete(0, 'end')
+        self.new_item_price_entry.delete(0, 'end')
 
     def remove_item(self):
         quantity = int(self.quantity_entry.get())
-        super().remove_item(self.selected_item, quantity)
-        self.update_treeview()  
-        self.quantity_entry.delete(0, 'end')
-        self.popUp.destroy()
+        for item in self.inventory:
+            if item.flower == self.selected_item.upper():
+                if item.quantity >= quantity:
+                    item.quantity -= quantity
+                    self.save_inventory()
+                    messagebox.showinfo("Success", f"{quantity} {self.selected_item} removed from inventory.")
+                    self.update_treeview()
+                    self.quantity_entry.delete(0, 'end')
+                    self.popUp.destroy()
+                    return
+        messagebox.showinfo("Error", f"{self.selected_item} not found in inventory.")
 
     def delete_item(self):
         if not self.inventory_tree.selection():
             messagebox.showinfo("No Selection", "Please select an item in the inventory.")
             return
-        super().delete_item(self.selected_item)
-        self.update_treeview() 
+        for item in self.inventory:
+            if item.flower.lower() == self.selected_item.lower():
+                if item.quantity != 0:
+                    messagebox.showinfo("Item Not Empty", f"The item '{self.selected_item}' still has quantity. Can't delete.")
+                    return
+                self.inventory.remove(item)
+                self.save_inventory()
+                messagebox.showinfo("Success", f"'{self.selected_item}' removed from inventory.")
+                self.update_treeview()
+                return
+        messagebox.showinfo("Error", f"{self.selected_item} not found in inventory.")
 
     def update_treeview(self):
         for i in self.inventory_tree.get_children():
             self.inventory_tree.delete(i)
-        for item, quantity in self.inventory.items():
-            self.inventory_tree.insert('', 'end', values=(item, quantity))
+        for item in self.inventory:
+            formatted_price = "{:.2f}".format(item.price)
+            self.inventory_tree.insert('', 'end', values=(item.flower, item.quantity, formatted_price))
 
     def popUp_window(self, operation):
         if not self.inventory_tree.selection():
@@ -87,11 +106,13 @@ class InventoryWindow(Inventory):
         inventory_title_label = tk.Label(self.root, text="Inventory Management System", font=("times new roman",30), fg="Black", bg="green", compound=CENTER)
         inventory_title_label.pack(fill=tk.X, side=tk.TOP)
 
-        self.inventory_tree = ttk.Treeview(inventory_frame, style="mystyle.Treeview", columns=('Item', 'Quantity'), show='headings')
-        self.inventory_tree.column('Item', width=860, anchor=tk.CENTER)
-        self.inventory_tree.column('Quantity', width=860, anchor=tk.CENTER)
-        self.inventory_tree.heading('Item', text='Flowers', anchor=tk.CENTER)
+        self.inventory_tree = ttk.Treeview(inventory_frame, style="mystyle.Treeview", columns=('Flower', 'Quantity', 'Price'), show='headings')
+        self.inventory_tree.column('Flower', width=240, anchor=tk.CENTER)
+        self.inventory_tree.column('Quantity', width=240, anchor=tk.CENTER)
+        self.inventory_tree.column('Price', width=240, anchor=tk.CENTER)
+        self.inventory_tree.heading('Flower', text='Flowers', anchor=tk.CENTER)
         self.inventory_tree.heading('Quantity', text='Quantity', anchor=tk.CENTER)
+        self.inventory_tree.heading('Price', text='Price (RM)', anchor=tk.CENTER)
         self.inventory_tree.pack(fill=tk.X, side=tk.LEFT)
         self.inventory_tree.bind('<<TreeviewSelect>>', self.on_tree_select)
 
@@ -103,11 +124,18 @@ class InventoryWindow(Inventory):
         self.remove_item_button.pack(fill=tk.X, side=tk.TOP)
 
         self.update_treeview()
-
+        self.new_item_price_entry = tk.Entry(button_frame, font=("Arial", 20))
+        self.new_item_price_entry.pack(fill=tk.X, side=tk.BOTTOM)
+        self.new_item_price_entry_label = tk.Label(button_frame, text="Price: ", font=("times new roman", 20))
+        self.new_item_price_entry_label.pack(fill=tk.X, side=tk.BOTTOM)    
         self.new_item_quantity_entry = tk.Entry(button_frame, font=("Arial", 20))
         self.new_item_quantity_entry.pack(fill=tk.X, side=tk.BOTTOM)  
+        self.new_item_quantity_entry_label = tk.Label(button_frame, text="Quantity: ", font=("times new roman", 20))
+        self.new_item_quantity_entry_label.pack(fill=tk.X, side=tk.BOTTOM) 
         self.new_item_entry = tk.Entry(button_frame, font=("Arial", 20))
         self.new_item_entry.pack(fill=tk.X, side=tk.BOTTOM) 
+        self.new_item_entry_label = tk.Label(button_frame, text="Flower: ", font=("times new roman", 20))
+        self.new_item_entry_label.pack(fill=tk.X, side=tk.BOTTOM)
 
         self.new_item_button = tk.Button(button_frame, text="Add new item", command=lambda: self.add_item("new"), font=("times new roman", 20), bg="pink")
         self.new_item_button.pack(fill=tk.X, side=tk.BOTTOM)

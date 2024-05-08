@@ -4,8 +4,7 @@ import json
 import os, glob
 from cryptography.fernet import Fernet
 from tkinter import messagebox
-from datetime import datetime, time
-import schedule
+from datetime import datetime
 
 class Customer:
     def __init__(self, name, contact, email):
@@ -21,7 +20,9 @@ class customerDatabase:
             with open(self.filename, 'r') as f:
                 data = json.load(f)
                 self.customer_info = []
-                self.customer_info = [Customer(item['name'], item['contact'], item['email']) for item in data]
+                for item in data:
+                    customer = Customer(item['name'], item['contact'], item['email'])
+                    self.customer_info.append(customer)
         except FileNotFoundError:
             self.customer_info = []
 
@@ -29,60 +30,101 @@ class customerDatabase:
         with open(self.filename, 'w') as f:
             customer_data = [{'name': customer.name, 'contact': customer.contact, 'email': customer.email} for customer in self.customer_info]
             json.dump(customer_data, f, indent=4)
-
+class Flowers:
+    def __init__(self, flower, quantity, price):
+        self.flower = flower
+        self.quantity = quantity
+        self.price = float(price) 
 class Inventory:
     def __init__(self):
-        self.filename = "data/inventory.json"
+        self.filename = "data/FlowerInventory.json"
+        self.inventory = []
         try:
             with open(self.filename, 'r') as f:
-                self.inventory = json.load(f)
+                data = json.load(f)
+                for item in data:
+                    flower = Flowers(item['Flower'], item['Quantity'], item['Price'])
+                    self.inventory.append(flower)
         except FileNotFoundError:
-            self.inventory = {}
+            pass
 
     def save_inventory(self):
+        data = [{'Flower': item.flower, 'Quantity': item.quantity, 'Price': item.price} for item in self.inventory]
         with open(self.filename, 'w') as f:
-            json.dump(self.inventory, f)
+            json.dump(data, f)
 
-    def add_item(self, item_name, quantity):
-        item = item_name.lower()
-        if item in self.inventory:
-            self.inventory[item] += quantity
-        else:
-            self.inventory[item] = quantity
-        messagebox.showinfo("Success", f"{quantity} {item} added to inventory.")
+    def find_item(self, flower_name):
+        for item in self.inventory:
+            if item.flower == flower_name.upper():
+                return item
+        return
+
+    def update_price(self, flower_name, price):
+        for item in self.inventory:
+            if item.flower == flower_name.upper():
+                item.price = price
+                self.save_inventory()
+                return
+        messagebox.showinfo("Error", f"{flower_name} not found in inventory.")
+
+    def add_item(self, flower_name, quantity, price):
+        for item in self.inventory:
+            if item.flower == flower_name.upper():
+                item.quantity += quantity
+                self.save_inventory()
+                messagebox.showinfo("Success", f"{quantity} {flower_name} added to inventory.")
+                return
+        new_flower = Flowers(flower_name, quantity, price)
+        self.inventory.append(new_flower)
         self.save_inventory()
+        messagebox.showinfo("Success", f"{quantity} {flower_name} added to inventory.")
 
-    def remove_item(self, item_name, quantity):
-        item = item_name.lower()
-        if item in self.inventory:
-            if self.inventory[item] >= quantity:
-                self.inventory[item] -= quantity
-                messagebox.showinfo("Success", f"{quantity} {item} removed from inventory.")
-            else:
-                messagebox.showinfo(f"Error: Not enough {item} in inventory.")
-        self.save_inventory()
+    def remove_item(self, flower_name, quantity):
+        for item in self.inventory:
+            if item.flower == flower_name.upper():
+                if item.quantity >= quantity:
+                    item.quantity -= quantity
+                    self.save_inventory()
+                    messagebox.showinfo("Success", f"{quantity} {flower_name} removed from inventory.")
+                    return
+                else:
+                    messagebox.showinfo("Error", f"Not enough {flower_name} in inventory.")
+                    return
+        messagebox.showinfo("Error", f"{flower_name} not found in inventory.")
 
-    def delete_item(self, item_name):
-        if self.inventory[item_name] != 0:
-            messagebox.showinfo("Item Not Empty", f"The item '{item_name}' still has quantity. Can't delete.")
-            return
-        confirm = messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete '{item_name}' from the inventory?")
-        if confirm:
-            del self.inventory[item_name]
-            messagebox.showinfo("Success", f"'{item_name}' removed from inventory.")
-            self.save_inventory()
+    def remove_item_customerorder(self, flower_name, quantity):
+        for item in self.inventory:
+            if item.flower == flower_name.upper():
+                if item.quantity >= quantity:
+                    item.quantity -= quantity
+                    self.save_inventory()
+                    return True
+        return False
+
+        
+
+    def delete_item(self, flower_name):
+        for item in self.inventory:
+            if item.flower == flower_name.upper():
+                if item.quantity != 0:
+                    messagebox.showinfo("Item Not Empty", f"The item '{flower_name}' still has quantity. Can't delete.")
+                    return
+                self.inventory.remove(item)
+                self.save_inventory()
+                messagebox.showinfo("Success", f"'{flower_name}' removed from inventory.")
+                return
+        messagebox.showinfo("Error", f"{flower_name} not found in inventory.")
 
     def check_low_stock(self, threshold=10):
-        low_stock_items = [item for item, quantity in self.inventory.items() if quantity < threshold]
+        low_stock_items = [item.flower for item in self.inventory if item.quantity < threshold]
         if low_stock_items:
             messagebox.showinfo("Low Stock Items", ', '.join(low_stock_items))
         else:
             messagebox.showinfo("Low Stock Items", "No items are in low stock.")
-
 class Report(Inventory):
     def generate_inv_report(self):
-        items = list(self.inventory.keys())
-        quantities = list(self.inventory.values())
+        items = [item.flower for item in self.inventory]
+        quantities = [item.quantity for item in self.inventory]
 
         plt.figure(figsize=(10, 6))
         plt.bar(items, quantities, color='skyblue')
