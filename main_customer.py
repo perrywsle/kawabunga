@@ -7,7 +7,7 @@ from functions import customerDatabase, Customer, PasswordManager, Inventory
 
 purchaselist = []
 purchaselistprice = []
-class Order(Inventory):
+class Order:
     def __init__(self):
         self.inv = Inventory()
 
@@ -31,6 +31,8 @@ class Order(Inventory):
         if order_confirmation:
             messagebox.showinfo("Order Purchase", "Order added to cart.")
         else:
+            del purchaselistprice[purchaselist.index(a)]
+            purchaselist.remove(a)
             messagebox.showinfo("Order Purchase", "Order cancelled.")
 
 class birthdayWindow:
@@ -68,8 +70,8 @@ class birthdayWindow:
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
         #Return to main menu
-        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
-        returnToMain.place(x=10, y=10, height=50, width=50)
+        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="grey", compound=LEFT)
+        returnToMain.place(x=0, y=0, height=50, width=50)
     
         # Birthday bouquet images
         self.img1a = tk.PhotoImage(file="images/td470.gif")
@@ -253,8 +255,8 @@ class funeralWindow:
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
         #Return to main menu
-        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
-        returnToMain.place(x=10, y=10, height=50, width=50)
+        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="grey", compound=LEFT)
+        returnToMain.place(x=0, y=0, height=50, width=50)
 
         # Birthday bouquet images
         self.img1 = tk.PhotoImage(file="images/funeral_sy173.gif")
@@ -466,8 +468,8 @@ class graduationWindow:
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
         #Return to main menu
-        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
-        returnToMain.place(x=10, y=10, height=50, width=50)
+        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customer_ui.returnToMain, fg="black", bg="grey", compound=LEFT)
+        returnToMain.place(x=0, y=0, height=50, width=50)
 
         # Graduation bouquet images
         self.img1 = tk.PhotoImage(file="images/graduation_bk838.gif")
