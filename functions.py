@@ -1,10 +1,6 @@
-import matplotlib.pyplot as plt
-import numpy as np
 import json
-import os, glob
 from cryptography.fernet import Fernet
 from tkinter import messagebox
-from datetime import datetime
 
 class Customer:
     def __init__(self, name, contact, email):
@@ -52,12 +48,6 @@ class Inventory:
         data = [{'Flower': item.flower, 'Quantity': item.quantity, 'Price': item.price} for item in self.inventory]
         with open(self.filename, 'w') as f:
             json.dump(data, f)
-
-    def find_item(self, flower_name):
-        for item in self.inventory:
-            if item.flower == flower_name.upper():
-                return item
-        return
 
     def update_price(self, flower_name, price):
         for item in self.inventory:
@@ -121,30 +111,6 @@ class Inventory:
             messagebox.showinfo("Low Stock Items", ', '.join(low_stock_items))
         else:
             messagebox.showinfo("Low Stock Items", "No items are in low stock.")
-class Report(Inventory):
-    def generate_inv_report(self):
-        items = [item.flower for item in self.inventory]
-        quantities = [item.quantity for item in self.inventory]
-
-        plt.figure(figsize=(10, 6))
-        plt.bar(items, quantities, color='skyblue')
-        plt.xlabel('Inventory Items')
-        plt.ylabel('Quantity')
-        plt.title('Inventory Report')
-        plt.xticks(rotation=90)
-        plt.tight_layout()
-
-        directory = 'report'
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
-        plt.savefig(f'{directory}/inventory_report_{datetime.now().date()}.png') 
-        return plt.show()
-    
-    def get_latest_image(self):
-        list_of_files = glob.glob('report/*')
-        latest_file = max(list_of_files, key=os.path.getctime)
-        return latest_file
 
 class PasswordManager:
     def __init__(self, filename='data/passwords.json', keyfile='data/key.key'):

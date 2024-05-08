@@ -4,6 +4,7 @@ from tkinter import messagebox, ttk
 import subprocess
 from functions import *
 from datetime import datetime
+from order import *
 
 class InventoryWindow(Inventory):
     def __init__(self, root, admin_ui):
@@ -151,11 +152,8 @@ class InventoryWindow(Inventory):
 
 class AnalyticsWindow(Report):
     def __init__(self, root, admin_ui):
-        super().__init__()
         self.root = root
         self.admin_ui = admin_ui
-    def generate_inv_rep(self):
-        super().generate_inv_report()
     def analytics_window(self):
         for widget in self.root.winfo_children():
             widget.destroy()
@@ -166,19 +164,27 @@ class AnalyticsWindow(Report):
 
         # Load the image
         self.img = PhotoImage(file="images/flower.gif")
-        self.inv_report = PhotoImage(file=super().get_latest_image())
+        self.inv_report = PhotoImage(file=super().get_latest_image("report/inventory"))
+        self.sales_report = PhotoImage(file=super().get_latest_image("report/sales"))
 
         # Latest Report
-        latest_report_label = tk.Label(analytics_frame, text="Latest Inventory Report", font=("times new roman", 25), bg="green")
-        latest_report_label.grid(row=0, column=0, padx=10, pady=10)
+        latest_inv_report_label = tk.Label(analytics_frame, text="Latest Inventory Report", font=("times new roman", 25), bg="green")
+        latest_inv_report_label.grid(row=0, column=0, padx=10, pady=10)
         latest_report = tk.Label(analytics_frame, image=self.inv_report)
         latest_report.grid(row=0, column=1, padx=10, pady=10)
+        latest_sales_report_label = tk.Label(analytics_frame, text="Latest Sales Report", font=("times new roman", 25), bg="green")
+        latest_sales_report_label.grid(row=1, column=0, padx=10, pady=10)
+        latest_report = tk.Label(analytics_frame, image=self.sales_report)
+        latest_report.grid(row=1, column=1, padx=10, pady=10)
 
         # Buttons
         button_frame = tk.Frame(self.root, bd=2, relief=tk.RIDGE)
         button_frame.place(x=1725, y=50, height=900, relwidth=0.1)
-        self.gen_inv_rep_button = tk.Button(button_frame, text="\nInventory Report\n", font=("times new roman", 20), command=self.generate_inv_rep, bg="light green", fg="black", cursor="hand2")
+        self.gen_inv_rep_button = tk.Button(button_frame, text="\nInventory Report\n", font=("times new roman", 20), command=super().generate_inv_report, bg="light green", fg="black", cursor="hand2")
         self.gen_inv_rep_button.pack(fill=tk.X, side=tk.TOP)
+        self.gen_sales_rep_button = tk.Button(button_frame, text="\nSales Report\n", font=("times new roman", 20), command=super().generate_sales_report, bg="light green", fg="black", cursor="hand2")
+        self.gen_sales_rep_button.pack(fill=tk.X, side=tk.TOP)
+
 
         #Return to main menu
         returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="grey", compound=LEFT)
@@ -226,7 +232,7 @@ class admin_UI:
         menu_label.pack(side=tk.TOP, fill=tk.X)
 
         self.menu_img = tk.PhotoImage(file = "images/flower_2.gif")
-        self.main_panel_img = tk.PhotoImage(file = self.analyticsWindow.get_latest_image())
+        self.main_panel_img = tk.PhotoImage(file = self.analyticsWindow.get_latest_image("report/inventory"))
         main_panel_label = tk.Label(main_panel, image=self.main_panel_img, compound=tk.CENTER)
         main_panel_label.pack(side=tk.TOP, fill=tk.X)
 

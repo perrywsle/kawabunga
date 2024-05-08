@@ -3,37 +3,8 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
 from datetime import datetime
-from functions import customerDatabase, Customer, PasswordManager, Inventory
-
-purchaselist = []
-purchaselistprice = []
-class Order:
-    def __init__(self):
-        self.inv = Inventory()
-
-    def click(self, a):
-        purchaselist.append(a)
-        price = None
-        for item in self.inv.inventory:
-            if item.flower == a.upper():
-                price = item.price
-                break
-        if price is None:
-            messagebox.showinfo("Error", f"{a} not found in inventory.")
-            return
-        purchaselistprice.append(price)
-        if self.inv.remove_item_customerorder(a, 1) is not True:
-            messagebox.showinfo("Error", f"Not enough {a} in inventory.")
-            purchaselist.clear()
-            purchaselistprice.clear()
-            return
-        order_confirmation = messagebox.askyesno("Order confirmation", "Are you sure you want to purchase this flower?")
-        if order_confirmation:
-            messagebox.showinfo("Order Purchase", "Order added to cart.")
-        else:
-            del purchaselistprice[purchaselist.index(a)]
-            purchaselist.remove(a)
-            messagebox.showinfo("Order Purchase", "Order cancelled.")
+from functions import PasswordManager
+from order import *
 
 class birthdayWindow:
     def __init__(self, root, customer_ui):
@@ -618,56 +589,6 @@ class graduationWindow:
 
         # Update the scroll region of the canvas
         scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.customer_ui.onFrameConfigure(canvas))
-
-class RegistrationWindow(Customer):
-    def __init__(self, root, customer_ui):
-        self.customerDatabase = customerDatabase()
-        self.root = root
-        self.customer_ui = customer_ui
-
-    def checkoutfinal(self):
-            totalvalue = sum(purchaselistprice)
-            items_summary = "\n".join(f"{item} - RM {price:.2f}" for item, price in zip(purchaselist, purchaselistprice))
-            if totalvalue == 0:
-                messagebox.showinfo("Reminder", "No order.")
-            else: 
-                purchase_confirmation = messagebox.askyesno("Items selected:", f"Selected items:\n{items_summary}\nTotal value: RM {totalvalue:.2f}")
-                if purchase_confirmation:
-                    messagebox.showinfo("Total amount of purchase", f"Your total purchase: RM {totalvalue:.2f}")
-                    self.register_popUp = tk.Toplevel(self.root)
-                    self.register_popUp.title("Customer Registration")
-                    self.name_label = tk.Label(self.register_popUp, text="Name: ", font=("times new roman", 20))
-                    self.name_label.grid(row=0, column=0, padx=10, pady=10)
-                    self.name_entry = tk.Entry(self.register_popUp, font=("Arial", 12))
-                    self.name_entry.grid(row=0, column=1, padx=10, pady=10)
-                    self.contact_label = tk.Label(self.register_popUp, text="Contact: ", font=("times new roman", 20))
-                    self.contact_label.grid(row=1, column=0, padx=10, pady=10)
-                    self.contact_entry = tk.Entry(self.register_popUp, font=("Arial", 12))
-                    self.contact_entry.grid(row=1, column=1, padx=10, pady=10)
-                    self.email_label = tk.Label(self.register_popUp, text="Email: ", font=("times new roman", 20))
-                    self.email_label.grid(row=2, column=0, padx=10, pady=10)
-                    self.email_entry = tk.Entry(self.register_popUp, font=("Arial", 12))
-                    self.email_entry.grid(row=2, column=1, padx=10, pady=10)
-                    self.submit_button = tk.Button(self.register_popUp, text="Submit", font=("times new roman", 20), command=self.register_info, cursor="hand2")
-                    self.submit_button.grid(row=3, column=1, padx=10, pady=10)
-                else:
-                    purchaselist.clear()
-                    purchaselistprice.clear()
-                    messagebox.showinfo("Success", "Data cleared successfully!")
-
-    def register_info(self):        
-        name = self.name_entry.get()
-        contact = self.contact_entry.get()
-        email = self.email_entry.get()
-        if name in [customer.name for customer in self.customerDatabase.customer_info] or contact in [customer.contact for customer in self.customerDatabase.customer_info] or email in [customer.email for customer in self.customerDatabase.customer_info] :
-            messagebox.showinfo("","Name already recorded.\nThank you for purchasing!")
-        else:
-            new_customer = Customer(name, contact, email)
-            self.customerDatabase.customer_info.append(new_customer)
-            self.customerDatabase.saveCustomerInfo()
-            messagebox.showinfo("Registration Successful", f"Thank you {name} for your purchase!")
-            self.register_popUp.destroy()
-
 class customer_UI:
     def __init__(self, root):
         self.root = root
@@ -677,9 +598,9 @@ class customer_UI:
         self.birthdayWindow = birthdayWindow(root, self)
         self.funeralWindow = funeralWindow(root, self)
         self.graduationWindow = graduationWindow(root, self)
-        self.registrationWindow = RegistrationWindow(root, self)
         self.password_manager = PasswordManager()
         self.order = Order()
+        self.registrationWindow = RegistrationWindow(root, self)
         self.attempts_left = 3
         self.createMainMenu()
 
@@ -708,7 +629,7 @@ class customer_UI:
         admin_name = self.admin_name_entry.get()
         admin_password = self.admin_password_entry.get()
         if self.password_manager.check_password(admin_name, admin_password):
-            subprocess.Popen(["python", "main_admin.py"])
+            subprocess.Popen(["python", "admin.py"])
             exit()
         self.attempts_left -= 1
         if self.attempts_left > 0:
@@ -812,7 +733,3 @@ class customer_UI:
     def mouse_scroll(self, event):
         canvas = event.widget
         canvas.yview_scroll(-1 * (event.delta // 120), "units")
-
-root = tk.Tk()
-app = customer_UI(root)
-root.mainloop()
