@@ -149,33 +149,61 @@ class InventoryWindow(Inventory):
 
         returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
         returnToMain.place(x=0, y=0, height=50, width=50)
-
 class AnalyticsWindow(Report):
     def __init__(self, root, admin_ui):
         self.root = root
         self.admin_ui = admin_ui
+        self.scroll_upper_limit = 0  
+        self.scroll_lower_limit = 3000
+
     def analytics_window(self):
         for widget in self.root.winfo_children():
             widget.destroy()
-        analytics_frame = tk.Frame(root, bd=10, relief=tk.RIDGE)
-        analytics_frame.place(x=0, y=50, height=1000, relwidth=0.9)
-        analytics_title_label = tk.Label(root, text="Analytics System", font=("times new roman",30), fg="Black", bg="green", compound=CENTER)
+
+        analytics_title_label = tk.Label(self.root, text="Analytics System", font=("times new roman", 30), bg="green", compound=tk.CENTER)
         analytics_title_label.pack(fill=tk.X, side=tk.TOP)
 
-        # Load the image
-        self.img = PhotoImage(file="images/flower.gif")
+        # Create the main frame
+        analytics_frame = tk.Frame(self.root, bd=2, relief=tk.RIDGE)
+        analytics_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=0.8)
+
+        # Create a canvas
+        canvas = tk.Canvas(analytics_frame)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=0.8)
+
+        # Add a scrollbar to the canvas
+        scrollbar = tk.Scrollbar(analytics_frame, orient=tk.VERTICAL, command=canvas.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Create another frame inside the canvas
+        scrollable_frame = tk.Frame(canvas)
+        scrollable_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Configure the canvas
+        canvas.configure(yscrollcommand=scrollbar.set)
+        scrollable_frame.bind("<MouseWheel>", self.admin_ui.mouse_scroll)
+        canvas.bind("<MouseWheel>", self.admin_ui.mouse_scroll)
+
+        # Add that new frame to a window in the canvas
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+        # Return to main menu
+        return_to_main = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="grey", compound=tk.LEFT)
+        return_to_main.place(x=0, y=0, height=50, width=50)
+
+        # Load the images
         self.inv_report = PhotoImage(file=super().get_latest_image("report/inventory"))
         self.sales_report = PhotoImage(file=super().get_latest_image("report/sales"))
 
         # Latest Report
-        latest_inv_report_label = tk.Label(analytics_frame, text="Latest Inventory Report", font=("times new roman", 25), bg="green")
+        latest_inv_report_label = tk.Label(scrollable_frame, text="Latest Inventory Report", font=("times new roman", 25), bg="green")
         latest_inv_report_label.grid(row=0, column=0, padx=10, pady=10)
-        latest_report = tk.Label(analytics_frame, image=self.inv_report)
-        latest_report.grid(row=0, column=1, padx=10, pady=10)
-        latest_sales_report_label = tk.Label(analytics_frame, text="Latest Sales Report", font=("times new roman", 25), bg="green")
+        latest_inv_report = tk.Label(scrollable_frame, image=self.inv_report)
+        latest_inv_report.grid(row=0, column=1, padx=10, pady=10)
+        latest_sales_report_label = tk.Label(scrollable_frame, text="Latest Sales Report", font=("times new roman", 25), bg="green")
         latest_sales_report_label.grid(row=1, column=0, padx=10, pady=10)
-        latest_report = tk.Label(analytics_frame, image=self.sales_report)
-        latest_report.grid(row=1, column=1, padx=10, pady=10)
+        latest_sales_report = tk.Label(scrollable_frame, image=self.sales_report)
+        latest_sales_report.grid(row=1, column=1, padx=10, pady=10)
 
         # Buttons
         button_frame = tk.Frame(self.root, bd=2, relief=tk.RIDGE)
@@ -184,11 +212,8 @@ class AnalyticsWindow(Report):
         self.gen_inv_rep_button.pack(fill=tk.X, side=tk.TOP)
         self.gen_sales_rep_button = tk.Button(button_frame, text="\nSales Report\n", font=("times new roman", 20), command=super().generate_sales_report, bg="light green", fg="black", cursor="hand2")
         self.gen_sales_rep_button.pack(fill=tk.X, side=tk.TOP)
-
-
-        #Return to main menu
-        returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="grey", compound=LEFT)
-        returnToMain.place(x=0, y=0, height=50, width=50)
+                # Update the scroll region of the canvas
+        scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.admin_ui.onFrameConfigure(canvas))
 
 class admin_UI:
     def __init__(self, root):
@@ -248,6 +273,8 @@ class admin_UI:
         customer_button = tk.Button(left_menu, text="\nCustomer Page\n", command=self.open_customer_UI, font=("times new roman", 20), bg="light grey", bd=3, cursor="hand2")
         customer_button.pack(side=tk.TOP, fill=tk.X)
 
+        main_panel_label.image = self.main_panel_img
+
     def returnToMain(self):
         for widget in self.root.winfo_children():
             widget.destroy()
@@ -256,6 +283,19 @@ class admin_UI:
     def open_customer_UI(self):
         subprocess.Popen(["python", "main_customer.py"])
         exit()
+
+    def onFrameConfigure(self, canvas):
+        canvas.configure(scrollregion=canvas.bbox("all"))
+
+    def mouse_scroll(self, event):
+        canvas = event.widget
+        canvas.yview_scroll(int(-1 * (event.delta // 120)), "units")
+        if event.delta < 0: 
+            if self.root.winfo_height() - event.y_root < self.scroll_lower_limit:
+                return "break" 
+        else:  
+            if event.y_root < self.scroll_upper_limit:
+                return "break"
 
 root = tk.Tk()
 app = admin_UI(root)

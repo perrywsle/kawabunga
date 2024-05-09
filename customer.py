@@ -11,6 +11,7 @@ class birthdayWindow:
         self.root = root
         self.customer_ui = customer_ui
         self.order = Order()
+        self.inv = Inventory()
 
     def birthday_window(self):
         # Birthday label
@@ -29,13 +30,14 @@ class birthdayWindow:
         scrollbar = tk.Scrollbar(main_frame, orient=tk.VERTICAL, command=canvas.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Configure the canvas
-        canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-        canvas.bind_all("<MouseWheel>", self.customer_ui.mouse_scroll)
-
         # Create another frame inside the canvas
         scrollable_frame = tk.Frame(canvas)
+        scrollable_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Configure the canvas
+        canvas.configure(yscrollcommand=scrollbar.set)
+        scrollable_frame.bind("<MouseWheel>", self.customer_ui.mouse_scroll)
+        canvas.bind("<MouseWheel>", self.customer_ui.mouse_scroll)
 
         # Add that new frame to a window in the canvas
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -214,13 +216,14 @@ class funeralWindow:
         scrollbar = tk.Scrollbar(main_frame, orient=tk.VERTICAL, command=canvas.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Configure the canvas
-        canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-        canvas.bind_all("<MouseWheel>", self.customer_ui.mouse_scroll)
-
         # Create another frame inside the canvas
         scrollable_frame = tk.Frame(canvas)
+        scrollable_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Configure the canvas
+        canvas.configure(yscrollcommand=scrollbar.set)
+        scrollable_frame.bind("<MouseWheel>", self.customer_ui.mouse_scroll)
+        canvas.bind("<MouseWheel>", self.customer_ui.mouse_scroll)
 
         # Add that new frame to a window in the canvas
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -427,13 +430,14 @@ class graduationWindow:
         scrollbar = tk.Scrollbar(main_frame, orient=tk.VERTICAL, command=canvas.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Configure the canvas
-        canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-        canvas.bind_all("<MouseWheel>", self.customer_ui.mouse_scroll)
-
         # Create another frame inside the canvas
         scrollable_frame = tk.Frame(canvas)
+        scrollable_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Configure the canvas
+        canvas.configure(yscrollcommand=scrollbar.set)
+        scrollable_frame.bind("<MouseWheel>", self.customer_ui.mouse_scroll)
+        canvas.bind("<MouseWheel>", self.customer_ui.mouse_scroll)
 
         # Add that new frame to a window in the canvas
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -614,7 +618,7 @@ class customer_UI:
         x_coordinate = (screen_width - width) // 2
         y_coordinate = (screen_height - height) // 2
         self.login_popUp.geometry(f"{width}x{height}+{x_coordinate}+{y_coordinate}")
-        self.admin_name_label = tk.Label(self.login_popUp, text="Name", font=("times new roman", 30))
+        self.admin_name_label = tk.Label(self.login_popUp, text="Name", font=("times new roman", 20))
         self.admin_name_label.grid(row=0, column=0, padx=10, pady=10)
         self.admin_name_entry = tk.Entry(self.login_popUp, font=("times new roman", 20))
         self.admin_name_entry.grid(row=0, column=1, padx=10, pady=10)
@@ -727,9 +731,9 @@ class customer_UI:
         self.createMainMenu()
 
     def onFrameConfigure(self, canvas):
-        '''Reset the scroll region to encompass the inner frame'''
         canvas.configure(scrollregion=canvas.bbox("all"))
 
     def mouse_scroll(self, event):
         canvas = event.widget
-        canvas.yview_scroll(-1 * (event.delta // 120), "units")
+        if isinstance(canvas, tk.Canvas):
+            canvas.yview_scroll(-1 * (event.delta // 120), "units")
