@@ -181,6 +181,7 @@ class AnalyticsWindow(Report):
 
         # Configure the canvas
         canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.configure(scrollregion=canvas.bbox("all"))
         scrollable_frame.bind("<MouseWheel>", self.admin_ui.mouse_scroll)
         canvas.bind("<MouseWheel>", self.admin_ui.mouse_scroll)
 
@@ -281,7 +282,7 @@ class admin_UI:
         self.createMainMenu()
 
     def open_customer_UI(self):
-        subprocess.Popen(["python", "main_customer.py"])
+        subprocess.Popen(["python", "customer.py"])
         exit()
 
     def onFrameConfigure(self, canvas):
