@@ -114,7 +114,7 @@ class InventoryWindow(Inventory):
         self.inventory_tree.heading('Flower', text='Flowers', anchor=tk.CENTER)
         self.inventory_tree.heading('Quantity', text='Quantity', anchor=tk.CENTER)
         self.inventory_tree.heading('Price', text='Price (RM)', anchor=tk.CENTER)
-        self.inventory_tree.pack(fill=tk.X, side=tk.LEFT)
+        self.inventory_tree.pack(fill=tk.BOTH, side=tk.TOP)
         self.inventory_tree.bind('<<TreeviewSelect>>', self.on_tree_select)
 
         button_frame = tk.Frame(self.root, bd=2, relief=tk.RIDGE)
@@ -149,6 +149,7 @@ class InventoryWindow(Inventory):
 
         returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
         returnToMain.place(x=0, y=0, height=50, width=50)
+
 class AnalyticsWindow(Report):
     def __init__(self, root, admin_ui):
         self.root = root
@@ -213,7 +214,7 @@ class AnalyticsWindow(Report):
         self.gen_inv_rep_button.pack(fill=tk.X, side=tk.TOP)
         self.gen_sales_rep_button = tk.Button(button_frame, text="\nSales Report\n", font=("times new roman", 20), command=super().generate_sales_report, bg="light green", fg="black", cursor="hand2")
         self.gen_sales_rep_button.pack(fill=tk.X, side=tk.TOP)
-                # Update the scroll region of the canvas
+        # Update the scroll region of the canvas
         scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.admin_ui.onFrameConfigure(canvas))
 
 class admin_UI:
@@ -224,6 +225,7 @@ class admin_UI:
         self.root = root
         self.inventoryWindwow = InventoryWindow(root, self)
         self.analyticsWindow = AnalyticsWindow(root, self)
+        self.orderStatusWindow = OrderStatusWindow(root, self)
         self.customer_database = customerDatabase()
         self.createMainMenu()
     
@@ -269,7 +271,7 @@ class admin_UI:
         inventory_button.pack(side=tk.TOP, fill=tk.X)
         analytics_button = tk.Button(left_menu, text="\nAnalytics\n", command=self.analyticsWindow.analytics_window, font=("times new roman", 20),cursor="hand2")
         analytics_button.pack(side=tk.TOP, fill=tk.X)
-        order_status_button = tk.Button(left_menu, text="\nOrders\n", font=("times new roman", 20), cursor="hand2")
+        order_status_button = tk.Button(left_menu, text="\nOrders\n", command=self.orderStatusWindow.order_status_window, font=("times new roman", 20), cursor="hand2")
         order_status_button.pack(side=tk.TOP, fill=tk.X)
         customer_button = tk.Button(left_menu, text="\nCustomer Page\n", command=self.open_customer_UI, font=("times new roman", 20), bg="light grey", bd=3, cursor="hand2")
         customer_button.pack(side=tk.TOP, fill=tk.X)
@@ -291,18 +293,77 @@ class admin_UI:
     def mouse_scroll(self, event):
         canvas = event.widget
         canvas.yview_scroll(int(-1 * (event.delta // 120)), "units")
-        if event.delta < 0: 
-            if self.root.winfo_height() - event.y_root < self.scroll_lower_limit:
-                return "break" 
-        else:  
-            if event.y_root < self.scroll_upper_limit:
-                return "break"
+
+class OrderStatusWindow(Inventory):
+        def __init__(self, root, admin_ui):
+            super().__init__()
+            self.root = root
+            self.admin_ui = admin_ui
+
+        def order_status_window(self):
+            for widget in self.root.winfo_children():
+                widget.destroy()
+
+            # Create a new frame with a different design
+            order_status_frame = tk.Frame(self.root, bd=2, relief=tk.RIDGE, bg="light grey")
+            order_status_frame.place(x=0, y=50, height=1000, relwidth=1)
+
+            order_status_title_label = tk.Label(self.root, text="Order Tracking System", font=("times new roman",30), fg="Black", bg="green", compound=CENTER)
+            order_status_title_label.pack(fill=tk.X, side=tk.TOP)
+
+            # Create a canvas
+            canvas = tk.Canvas(order_status_frame)
+            canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=0.8)
+
+            # Add a scrollbar to the canvas
+            scrollbar = tk.Scrollbar(order_status_frame, orient=tk.VERTICAL, command=canvas.yview)
+            scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+            # Create another frame inside the canvas
+            scrollable_frame = tk.Frame(canvas)
+            scrollable_frame.pack(fill=tk.BOTH, expand=True)
+
+            # Configure the canvas
+            canvas.configure(yscrollcommand=scrollbar.set)
+            canvas.configure(scrollregion=canvas.bbox("all"))
+            scrollable_frame.bind("<MouseWheel>", self.admin_ui.mouse_scroll)
+            canvas.bind("<MouseWheel>", self.admin_ui.mouse_scroll)
+
+            # Add that new frame to a window in the canvas
+            canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+            # Return to main menu
+            return_to_main = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="grey", compound=tk.LEFT)
+            return_to_main.place(x=0, y=0, height=50, width=50)
+
+            # Read the data from sales.json and customer_info.json
+            with open('data/sales.json', 'r') as f:
+                sales_data = json.load(f)
+            with open('data/customer_info.json', 'r') as f:
+                customer_data = json.load(f)
+
+            # Combine the sales data and customer data
+            order_data = []
+            for sale, customer in zip(sales_data, customer_data):
+                order = {**sale, **customer}
+                order_data.append(order)
+
+            # Display the order data in a table in the new window
+            for i, order in enumerate(order_data):
+                for j, (key, value) in enumerate(order.items()):
+                    if key == 'flower' or key == 'revenue':
+                        label = tk.Label(scrollable_frame, text=value, padx=10, pady=5, relief=tk.RIDGE, font=("times new roman", 40), fg="blue")
+                    else:
+                        label = tk.Label(scrollable_frame, text=value, padx=10, pady=5, relief=tk.RIDGE, font=("times new roman", 40), fg="black")
+                    label.grid(row=i+1, column=j, sticky="nsew")
+            # Update the scroll region of the canvas
+            scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.admin_ui.onFrameConfigure(canvas))
 
 root = tk.Tk()
 app = admin_UI(root)
 style = ttk.Style(root)
 style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=("times new roman", 20))
 style.configure("mystyle.Treeview.Heading", font=("times new roman", 30,"bold"), background="light blue", foreground="green")
-style.configure("mystyle.Treeview", rowheight=50)
+style.configure("mystyle.Treeview", rowheight=70)
 style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})])
 root.mainloop()

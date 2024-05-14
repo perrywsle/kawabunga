@@ -7,7 +7,6 @@ class Customer:
         self.name = name
         self.contact = contact
         self.email = email
-       
 class customerDatabase:
     def __init__(self):
         self.customers = []
@@ -111,7 +110,6 @@ class Inventory:
             messagebox.showinfo("Low Stock Items", ', '.join(low_stock_items))
         else:
             messagebox.showinfo("Low Stock Items", "No items are in low stock.")
-
 class PasswordManager:
     def __init__(self, filename='data/passwords.json', keyfile='data/key.key'):
         self.filename = filename

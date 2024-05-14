@@ -1,5 +1,6 @@
 import subprocess
 import tkinter as tk
+from tkinter import ttk
 from tkinter import *
 from tkinter import messagebox
 from datetime import datetime
@@ -193,6 +194,7 @@ class birthdayWindow:
 
         # Update the scroll region of the canvas
         scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.customer_ui.onFrameConfigure(canvas))
+
 class funeralWindow:
     def __init__(self, root, customer_ui):
         self.root = root
@@ -593,6 +595,7 @@ class graduationWindow:
 
         # Update the scroll region of the canvas
         scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.customer_ui.onFrameConfigure(canvas))
+  
 class customer_UI:
     def __init__(self, root):
         self.root = root
@@ -602,9 +605,9 @@ class customer_UI:
         self.birthdayWindow = birthdayWindow(root, self)
         self.funeralWindow = funeralWindow(root, self)
         self.graduationWindow = graduationWindow(root, self)
+        self.orderUI = order_UI(root, self)
         self.password_manager = PasswordManager()
         self.order = Order()
-        self.registrationWindow = RegistrationWindow(root, self)
         self.attempts_left = 3
         self.createMainMenu()
 
@@ -622,7 +625,7 @@ class customer_UI:
         self.admin_name_label.grid(row=0, column=0, padx=10, pady=10)
         self.admin_name_entry = tk.Entry(self.login_popUp, font=("times new roman", 20))
         self.admin_name_entry.grid(row=0, column=1, padx=10, pady=10)
-        self.admin_name_label = tk.Label(self.login_popUp, text="Password", font=("times new roman", 30))
+        self.admin_name_label = tk.Label(self.login_popUp, text="Password", font=("times new roman", 20))
         self.admin_name_label.grid(row=1, column=0, padx=10, pady=10)
         self.admin_password_entry = tk.Entry(self.login_popUp, show="*", font=(80))
         self.admin_password_entry.grid(row=1, column=1, padx=10, pady=10)
@@ -645,6 +648,9 @@ class customer_UI:
             exit()
 
     def createMainMenu(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+            
         self.title_label = tk.Label(self.root, text="Kedai Bunga", font=("times new roman", 40, "bold"), fg="white", bg="pink")
         self.title_label.place(x=0, 
                                y=0, 
@@ -674,8 +680,7 @@ class customer_UI:
                              y=self.root.winfo_screenheight()*0.30, 
                              relwidth=0.8, 
                              height=self.root.winfo_screenheight()*0.70)
-        #self.promotion_label = tk.Label(self.root, text="Promotion!!", font=("times new roman", 50), bg="hot pink")
-        #self.promotion_label.place(x=self.root.winfo_width()*0.4, y=self.root.winfo_screenheight()*0.15, relwidth=0.8, height=self.root.winfo_screenheight()*0.2)
+
         menu_label = tk.Label(left_menu, text="Menu", font=("times new roman", 20), bg="pink")
         menu_label.pack(side=tk.TOP, fill=tk.X)
         img_menu = PhotoImage(file = "images/png.gif")
@@ -683,12 +688,10 @@ class customer_UI:
         img_menu_label.pack(side=TOP, fill=tk.X)
 
         # Buttons in Left Menu
-        order_button = tk.Button(left_menu, text="\nOrder\n", font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
+        menu_button = tk.Button(left_menu, text="\nRegister\n", font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
+        menu_button.pack(side=tk.TOP, fill=tk.X)
+        order_button = tk.Button(left_menu, text="\nOrder\n",command = self.orderUI.order_window, font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
         order_button.pack(side=tk.TOP, fill=tk.X)
-        register_button = tk.Button(left_menu, text="\nRegister\n", font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
-        register_button.pack(side=tk.TOP, fill=tk.X)
-        promotion_button = tk.Button(left_menu, text="\nPromotion\n", font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
-        promotion_button.pack(side=tk.TOP, fill=tk.X)
         admin_button = tk.Button(left_menu, text="\nSettings\n", command=self.loginPage, font=("times new roman", 20), bg="white", bd=3, cursor="hand2")
         admin_button.pack(side=tk.TOP, fill=tk.X)
 
@@ -717,10 +720,6 @@ class customer_UI:
         graduation_label = tk.Label(category_frame, text="Graduation", font=("times new roman", 20), fg="white", bg="pink")
         graduation_label.grid(row=1, column=2, padx=20, pady=20)
 
-        self.check_out_img = tk.PhotoImage(file="images/blank.png")
-        checkout= tk.Button(category_frame, text="Checkout", font=("times new roman", 10), fg="white", bg="grey", image=self.check_out_img, command=self.registrationWindow.checkoutfinal)
-        checkout.grid(row=0, column=3, padx=20, pady=20)
-
         # Footer
         contact_label = tk.Label(self.root, text="For further inquiries, please contact 019-999-9999", font=("times new roman", 20), fg="white", bg="pale violet red")
         contact_label.pack(side=tk.BOTTOM, fill=tk.X)
@@ -737,3 +736,8 @@ class customer_UI:
         canvas = event.widget
         if isinstance(canvas, tk.Canvas):
             canvas.yview_scroll(-1 * (event.delta // 120), "units")
+
+
+root = tk.Tk()
+app = customer_UI(root)
+root.mainloop()
