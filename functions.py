@@ -3,10 +3,12 @@ from cryptography.fernet import Fernet
 from tkinter import messagebox
 
 class Customer:
-    def __init__(self, name, contact, email):
+    def __init__(self, name, contact, email, pickupdate, pickuptime):
         self.name = name
         self.contact = contact
         self.email = email
+        self.pickupdate = pickupdate
+        self.pickuptime = pickuptime
 class customerDatabase:
     def __init__(self):
         self.customers = []
@@ -16,14 +18,14 @@ class customerDatabase:
                 data = json.load(f)
                 self.customer_info = []
                 for item in data:
-                    customer = Customer(item['name'], item['contact'], item['email'])
+                    customer = Customer(item['name'], item['contact'], item['email'], item['pickupdate'], item['pickuptime'])
                     self.customer_info.append(customer)
         except FileNotFoundError:
             self.customer_info = []
 
     def saveCustomerInfo(self):
         with open(self.filename, 'w') as f:
-            customer_data = [{'name': customer.name, 'contact': customer.contact, 'email': customer.email} for customer in self.customer_info]
+            customer_data = [{'name': customer.name, 'contact': customer.contact, 'email': customer.email, 'pickupdate': customer.pickupdate,'pickuptime': customer.pickuptime} for customer in self.customer_info]
             json.dump(customer_data, f, indent=4)
 class Flowers:
     def __init__(self, flower, quantity, price):

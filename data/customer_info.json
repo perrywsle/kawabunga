@@ -1,22 +1,16 @@
 [
     {
-        "name": "Perry",
-        "contact": "0168110811",
-        "email": "perrywsle@gmail.com"
+        "name": "Peery",
+        "contact": "0165647895",
+        "email": "perrywsle@gmail.com",
+        "pickupdate": "2024-06-25",
+        "pickuptime": "03:27"
     },
     {
-        "name": "ChingChing",
-        "contact": "0177777777",
-        "email": "chingching@gmail.com"
-    },
-    {
-        "name": "Athanasius",
-        "contact": "0123456789",
-        "email": "atahn@yahoo.hotmail"
-    },
-    {
-        "name": "gghjj",
-        "contact": "23456",
-        "email": "ertyui"
+        "name": "perry",
+        "contact": "0123456768",
+        "email": "henry20@gmail.com",
+        "pickupdate": "2024-08-06",
+        "pickuptime": "12:00"
     }
 ]

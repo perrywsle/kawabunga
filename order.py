@@ -24,30 +24,26 @@ class Order:
     def click(self, a):
         purchaselist.append(a)
         price = None
-        # Check if there's enough of the item in the inventory
         for item in self.inv.inventory:
             if item.flower == a.upper():
-                if item.quantity < 1:
+                if item.quantity >= 1:
+                    price = item.price
+                    if price is None:
+                        messagebox.showinfo("Error", f"{a} not found in inventory.")
+                        return
+                    purchaselistprice.append(price)
+                    break
+                else:
                     messagebox.showinfo("Error", f"Not enough {a} in inventory.")
+                    purchaselist.remove(a)
                     return
-
-        # Add the item to the cart without decreasing the inventory
-        purchaselist.append(a)
-        price = None
-        for item in self.inv.inventory:
-            if item.flower == a.upper():
-                price = item.price
-                break
-        if price is None:
-            messagebox.showinfo("Error", f"{a} not found in inventory.")
-            return
-        purchaselistprice.append(price)
 
         order_confirmation = messagebox.askyesno("Order confirmation", "Are you sure you want to purchase this flower?")
         if order_confirmation:
             messagebox.showinfo("Order Purchase", "Order added to cart.")      
         else:
-            del purchaselistprice[purchaselist.index(a)]
+            index = purchaselist.index(a)
+            del purchaselistprice[index]
             purchaselist.remove(a)
             messagebox.showinfo("Order Purchase", "Order cancelled.")
 
@@ -57,58 +53,69 @@ class order_UI:
         self.customerUI = customer_UI
         self.customerDatabase = customerDatabase()
         self.sales_file = 'data/sales.json'
-        self.order_window()
 
     def order_window(self):
+        
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        order_title_label = tk.Label(self.root, text="Check out page", font=("times new roman", 30), bg="green", compound=tk.CENTER)
+                # Create the main frame
+        main_frame = tk.Frame(self.root)
+        main_frame.pack(fill=tk.BOTH, expand=1)
+
+        order_title_label = tk.Label(main_frame, text="Check out page", font=("times new roman", 30), bg="pale violet red", compound=tk.CENTER)
         order_title_label.pack(fill=tk.X, side=tk.TOP)
 
         # Create the main frame
-        order_frame = tk.Frame(self.root, bd=2, relief=tk.RIDGE)
+        order_frame = tk.Frame(main_frame, bd=2, relief=tk.RIDGE)
         order_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
 
-        # Create a canvas
-        canvas = tk.Canvas(order_frame)
-        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
-
-        # Add a scrollbar to the canvas
-        scrollbar = tk.Scrollbar(order_frame, orient=tk.VERTICAL, command=canvas.yview)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        canvas = tk.Canvas(main_frame)
+        canvas.pack(side=tk.RIGHT, fill=tk.BOTH, expand=1)
 
         # Create another frame inside the canvas
-        self.scrollable_frame = tk.Frame(canvas)
-        self.scrollable_frame.grid(row=0,column=0,sticky="nsew")
+        scrollable_frame = tk.Frame(canvas)
+        scrollable_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=1)
+                # Add a scrollbar to the canvas
+        scrollbar = tk.Scrollbar(main_frame, orient=tk.VERTICAL, command=canvas.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+
+        total_purchase_label = tk.Label(scrollable_frame, text="Total purchase:", font=("times new roman", 25), bg="white", compound=tk.CENTER)
+        total_purchase_label.grid(row=0, column=0)
+
+        total_price = sum(purchaselistprice)
+
+        total_price_label = tk.Label(scrollable_frame, text=f"RM {total_price:.2f}", font=("times new roman", 25), bg="white", compound=tk.CENTER)
+        total_price_label.grid(row=0, column=1)
 
         # Title just above the table
-        title_label = tk.Label(self.scrollable_frame, text="Purchase List", font=("times new roman", 20), bg="gray", compound=tk.CENTER)
-        title_label.grid(row=0, column=0, sticky="ew")
+        title_label = tk.Label(scrollable_frame, text="Purchase List", font=("times new roman", 40), bg="pink", compound=tk.CENTER)
+        title_label.grid(row=1, column=0)
 
          # Sample data for the purchase list
         purchase_list = []
 
         for item, price in zip(purchaselist, purchaselistprice):
-            price = str(price)
+            price = str(f"{price:.2f}")
             data = {'flower': item, 'revenue':"RM" + price}
             purchase_list.append(data)
-
 
         # Populate the scrollable frame with the purchase list
         for i, purchase in enumerate(purchase_list):
             for j, (key, value) in enumerate(purchase.items()):
-                label = tk.Label(self.scrollable_frame, text=value, padx=10, pady=5, relief=tk.RIDGE)
-                label.grid(row=i+1, column=j, sticky="nsew")
-                
+                label = tk.Label(scrollable_frame, text=value, font=20, padx=50, pady=35, relief=tk.RIDGE)
+                label.grid(row=i+5, column=j, sticky="nsew")
+        
+
         # Configure the canvas
         canvas.configure(yscrollcommand=scrollbar.set)
         canvas.configure(scrollregion=canvas.bbox("all"))
-        self.scrollable_frame.bind("<MouseWheel>", self.customerUI.mouse_scroll)
-        canvas.bind("<MouseWheel>", self.customerUI.mouse_scroll)
+        scrollable_frame.bind("<MouseWheel>", self.mouse_scroll)
+        canvas.bind("<MouseWheel>", self.mouse_scroll)
 
         # Add that new frame to a window in the canvas
-        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
         # Customer registration form
         self.name_label = tk.Label(order_frame, text="Name: ", font=("times new roman", 30))
@@ -133,14 +140,16 @@ class order_UI:
         self.pickuptime_entry.pack()
         self.submit_button = tk.Button(order_frame, text="Submit", font=("times new roman", 30), command=self.register_info, cursor="hand2")
         self.submit_button.pack()
-        # Cancel Order button
-        cancel_order_button = tk.Button(order_frame, text="Cancel Order", font=("times new roman", 30), command=self.cancel_order, cursor="hand2")
-        cancel_order_button.pack()
 
         # Return to main menu
         return_to_main = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customerUI.returnToMain, fg="black", bg="grey", compound=tk.LEFT)
         return_to_main.place(x=0, y=0, height=50, width=50)
-        
+        scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.customerUI.onFrameConfigure(canvas))
+
+    def mouse_scroll(self, event):
+        canvas = event.widget
+        canvas.yview_scroll(int(-1 * (event.delta // 120)), "units")
+                
     def register_info(self):     
         name = self.name_entry.get()
         contact = self.contact_entry.get()
@@ -161,14 +170,15 @@ class order_UI:
             return
         
         try:
-            user_date = datetime.strptime (pickupdate, "%Y-%m-%d")
+            user_date = datetime.strptime(pickupdate, "%Y-%m-%d")
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid date using the YYYY-MM-DD format.")
             return
-        
-        if user_date < datetime.now():
+
+        if user_date < datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
             messagebox.showerror("Error", "Please enter a valid date.")
             return
+
         
         if not re.match (r"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$", pickuptime):
             messagebox.showerror("Error", "Please enter a valid time using the HH:MM 24-hour format.")
@@ -207,12 +217,18 @@ class order_UI:
         docx2pdf.convert(docx_filename, pdf_filename)
         messagebox.showinfo("Registration Successful", f"Thank you {name} for your purchase! Your receipt has been sent to your email.")
 
-        # Append the sales data to sales.json
         sales_data = [{'flower': item, 'revenue': price} for item, price in zip(purchaselist, purchaselistprice)]
-        with open(self.sales_file, 'a') as f:
-            for data in sales_data:
-                json.dump(data, f)
-                f.write('\n')
+        
+        # Load existing data
+        with open(self.sales_file, 'r') as f:
+            existing_data = json.load(f)
+        
+        # Append new data
+        existing_data.extend(sales_data)
+        
+        # Write everything back to the file
+        with open(self.sales_file, 'w') as f:
+            json.dump(existing_data, f, indent=4)
 
         # send email to customer
         smtp_port = 587                
@@ -289,6 +305,7 @@ class order_UI:
         messagebox.showinfo("Order Cancelled", "Your order has been cancelled.")
         self.update_purchase_list(self.scrollable_frame)
 
+
 class Report(Inventory):
     def __init__(self):
         super().__init__()
@@ -313,7 +330,7 @@ class Report(Inventory):
         return plt.show()
 
     def generate_sales_report(self):
-        with open(self.sales_file, 'r') as f:
+        with open("data/sales.json", 'r') as f:
             data = json.load(f)
             self.sales = []
             for item in data:
