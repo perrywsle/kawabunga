@@ -359,7 +359,3 @@ class Report(Inventory):
         list_of_files = glob.glob(f'{directory}/*')
         latest_file = max(list_of_files, key=os.path.getctime)
         return latest_file
-
-o = Report()
-o.generate_inv_report()
-o.generate_sales_report()
