@@ -152,7 +152,6 @@ class InventoryWindow(Inventory):
 
         returnToMain = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.admin_ui.returnToMain, fg="black", bg="yellow", compound=LEFT)
         returnToMain.place(x=0, y=0, height=50, width=50)
-
 class AnalyticsWindow(Report):
     def __init__(self, root, admin_ui):
         super().__init__()
@@ -230,7 +229,6 @@ class AnalyticsWindow(Report):
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
         self.analytics_window()
-
 class OrderStatusWindow(Inventory):
         def __init__(self, root, admin_ui):
             super().__init__()
@@ -282,15 +280,14 @@ class OrderStatusWindow(Inventory):
                 for j, (key, value) in enumerate(customer.items()):
                     if key == 'purchases':
                         if value and isinstance(value[0], list):  # Check if value is not empty and is a list of lists
-                            value = ', '.join(f"{item[0]}: RM{item[1]:.2f}" for item in value[0])  # Format purchases
+                            value = '\n'.join(f"{item[0]}: RM{item[1]:.2f}" for item in value[0])  # Format purchases
                         else:
                             value = 'No purchases'
 
-                    label = tk.Label(scrollable_frame, text=value, padx=10, pady=5, relief=tk.RIDGE, font=("times new roman", 40), fg="black")
+                    label = tk.Label(scrollable_frame, text=value, padx=10, pady=5, relief=tk.RIDGE, font=("times new roman", 30), fg="black")
                     label.grid(row=i+1, column=j, sticky="nsew")
             # Update the scroll region of the canvas
             scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.admin_ui.onFrameConfigure(canvas))
-
 class admin_UI:
     def __init__(self, root):
         self.root = root
