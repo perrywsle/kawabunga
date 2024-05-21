@@ -40,7 +40,8 @@ class Order:
 
         order_confirmation = messagebox.askyesno("Order confirmation", "Are you sure you want to purchase this flower?")
         if order_confirmation:
-            messagebox.showinfo("Order Purchase", "Order added to cart.")      
+            messagebox.showinfo("Order Purchase", "Order added to cart.")
+            self.customer.add_purchase((a, price))  # Add the purchase to the customer
         else:
             index = purchaselist.index(a)
             del purchaselistprice[index]
@@ -185,10 +186,9 @@ class order_UI:
             return
 
         new_customer = Customer(name, contact, email, pickupdate, pickuptime)
+        new_customer.add_purchase(list(zip(purchaselist, purchaselistprice)))  # Add the purchased flower
         self.customerDatabase.customer_info.append(new_customer)
         self.customerDatabase.saveCustomerInfo()
-        print (purchaselist)
-        print (purchaselistprice)
         invoice_list = list(zip(purchaselist,purchaselistprice))
 
         #generate receipt
@@ -286,7 +286,10 @@ class order_UI:
 
                 Kawabunga.quit()
 
-        send_emails(email_to)   
+        send_emails(email_to) 
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        self.customerUI.createMainMenu()
 
     def update_purchase_list(self, scrollable_frame):
         for widget in scrollable_frame.winfo_children():
@@ -305,7 +308,6 @@ class order_UI:
         messagebox.showinfo("Order Cancelled", "Your order has been cancelled.")
         self.update_purchase_list(self.scrollable_frame)
 
-
 class Report(Inventory):
     def __init__(self):
         super().__init__()
@@ -316,7 +318,7 @@ class Report(Inventory):
 
         plt.figure(figsize=(10, 6))
         plt.bar(items, quantities, color='skyblue')
-        plt.xlabel('Inventory Items')
+        plt.xlabel('Flowers')
         plt.ylabel('Quantity')
         plt.title('Inventory Report')
         plt.xticks(rotation=90)
@@ -327,7 +329,6 @@ class Report(Inventory):
             os.makedirs(directory)
 
         plt.savefig(f'{directory}/inventory_report_{datetime.now().date()}.png') 
-        return plt.show()
 
     def generate_sales_report(self):
         with open("data/sales.json", 'r') as f:
@@ -343,7 +344,7 @@ class Report(Inventory):
         plt.figure(figsize=(10, 6))
         plt.bar(items, prices, color='skyblue')
         plt.xlabel('Items Sold')
-        plt.ylabel('Revenue')
+        plt.ylabel('Revenue (RM)')
         plt.title('Sales Report')
         plt.xticks(rotation=90)
         plt.tight_layout()
@@ -353,9 +354,12 @@ class Report(Inventory):
             os.makedirs(directory)
 
         plt.savefig(f'{directory}/sales_report_{datetime.now().date()}.png') 
-        return plt.show()
     
     def get_latest_image(self, directory):
         list_of_files = glob.glob(f'{directory}/*')
         latest_file = max(list_of_files, key=os.path.getctime)
         return latest_file
+
+o = Report()
+o.generate_inv_report()
+o.generate_sales_report()

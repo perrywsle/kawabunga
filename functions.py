@@ -9,6 +9,11 @@ class Customer:
         self.email = email
         self.pickupdate = pickupdate
         self.pickuptime = pickuptime
+        self.purchases = [] 
+
+    def add_purchase(self, flower):
+        self.purchases.append(flower)
+
 class customerDatabase:
     def __init__(self):
         self.customers = []
@@ -19,19 +24,22 @@ class customerDatabase:
                 self.customer_info = []
                 for item in data:
                     customer = Customer(item['name'], item['contact'], item['email'], item['pickupdate'], item['pickuptime'])
+                    customer.purchases = item.get('purchases', [])  # Load purchases
                     self.customer_info.append(customer)
         except FileNotFoundError:
             self.customer_info = []
 
     def saveCustomerInfo(self):
         with open(self.filename, 'w') as f:
-            customer_data = [{'name': customer.name, 'contact': customer.contact, 'email': customer.email, 'pickupdate': customer.pickupdate,'pickuptime': customer.pickuptime} for customer in self.customer_info]
+            customer_data = [{'name': customer.name, 'contact': customer.contact, 'email': customer.email,'pickupdate':customer.pickupdate, 'pickuptime':customer.pickuptime, 'purchases': customer.purchases} for customer in self.customer_info]
             json.dump(customer_data, f, indent=4)
+
 class Flowers:
     def __init__(self, flower, quantity, price):
         self.flower = flower
         self.quantity = quantity
         self.price = float(price) 
+
 class Inventory:
     def __init__(self):
         self.filename = "data/FlowerInventory.json"
@@ -58,17 +66,20 @@ class Inventory:
                 return
         messagebox.showinfo("Error", f"{flower_name} not found in inventory.")
 
-    def add_item(self, flower_name, quantity, price):
+    def add_item(self, flower_name, quantity, price=None):
         for item in self.inventory:
             if item.flower == flower_name.upper():
                 item.quantity += quantity
+                if price is not None:
+                    item.price = price
                 self.save_inventory()
                 messagebox.showinfo("Success", f"{quantity} {flower_name} added to inventory.")
                 return
-        new_flower = Flowers(flower_name, quantity, price)
-        self.inventory.append(new_flower)
-        self.save_inventory()
-        messagebox.showinfo("Success", f"{quantity} {flower_name} added to inventory.")
+        if price is not None:
+            new_flower = Flowers(flower_name, quantity, price)
+            self.inventory.append(new_flower)
+            self.save_inventory()
+            messagebox.showinfo("Success", f"{quantity} {flower_name} added to inventory.")
 
     def remove_item(self, flower_name, quantity):
         for item in self.inventory:
@@ -92,8 +103,6 @@ class Inventory:
                     return True
         return False
 
-        
-
     def delete_item(self, flower_name):
         for item in self.inventory:
             if item.flower == flower_name.upper():
@@ -112,6 +121,7 @@ class Inventory:
             messagebox.showinfo("Low Stock Items", ', '.join(low_stock_items))
         else:
             messagebox.showinfo("Low Stock Items", "No items are in low stock.")
+
 class PasswordManager:
     def __init__(self, filename='data/passwords.json', keyfile='data/key.key'):
         self.filename = filename
