@@ -195,7 +195,7 @@ class order_UI:
         doc = DocxTemplate("invoice_template 2.docx")
         print (invoice_list)
         total = sum(purchaselistprice)
-        totall = "RM " + str(total)
+        totall = f"RM {total:.2f}"
         doc.render({"name": name, 
         "phone": contact,
         "email": email,

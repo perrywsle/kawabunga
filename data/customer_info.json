@@ -8,8 +8,8 @@
         "purchases": [
             [
                 [
-                "F012",
-                599.0
+                    "F012",
+                    599.0
                 ]
             ]
         ]
@@ -29,6 +29,59 @@
                 [
                     "F021",
                     259.0
+                ]
+            ]
+        ]
+    },
+    {
+        "name": "Felix",
+        "contact": "0147634563",
+        "email": "102787460@students.swinburne.edu.my",
+        "pickupdate": "2069-06-09",
+        "pickuptime": "13:13",
+        "purchases": [
+            [
+                [
+                    "F011",
+                    389.0
+                ],
+                [
+                    "B008",
+                    159.0
+                ]
+            ]
+        ]
+    },
+    {
+        "name": "Felix",
+        "contact": "0147634563",
+        "email": "102787460@students.swinburne.edu.my",
+        "pickupdate": "2069-06-09",
+        "pickuptime": "13:13",
+        "purchases": [
+            [
+                [
+                    "F011",
+                    389.0
+                ],
+                [
+                    "B008",
+                    159.0
+                ]
+            ]
+        ]
+    },
+    {
+        "name": "Perrrr",
+        "contact": "0154637281",
+        "email": "perrywsle@gmail.com",
+        "pickupdate": "2025-09-20",
+        "pickuptime": "00:00",
+        "purchases": [
+            [
+                [
+                    "B001",
+                    499.0
                 ]
             ]
         ]
