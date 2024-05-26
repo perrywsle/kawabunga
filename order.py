@@ -120,8 +120,7 @@ class order_UI:
         return_to_main = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customerUI.returnToMain, fg="black", bg="grey", compound=tk.LEFT)
         return_to_main.place(x=0, y=0, height=50, width=50)
         self.scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.customerUI.onFrameConfigure(canvas))
-
-
+        
     def purchase_list(self):
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
@@ -137,7 +136,6 @@ class order_UI:
         title_label = tk.Label(self.scrollable_frame, text="Purchase List", font=("times new roman", 40), bg="pink", compound=tk.CENTER)
         title_label.grid(row=1, column=0, columnspan=2)
 
-
         purchase_list.clear()
         # Populate the scrollable frame with the updated purchase list
         for item, price in zip(purchaselist, purchaselistprice):
@@ -149,9 +147,12 @@ class order_UI:
         for i, purchase in enumerate(purchase_list):
             for j, (key, value) in enumerate(purchase.items()):
                 label = tk.Label(self.scrollable_frame, text=value, font=20, padx=50, pady=35, relief=tk.RIDGE)
-                label.grid(row=i + 1, column=j, sticky="nsew")
+                label.grid(row=i + 2, column=j, sticky="nsew")
                 remove_button = tk.Button(self.scrollable_frame, text="Remove", font=20, bg="light grey", padx=50, pady=35, relief=tk.FLAT, command=lambda f=purchase['flower']: self.remove_item(f))
-                remove_button.grid(row=i + 1, column=j + 1)
+                remove_button.grid(row=i + 2, column=j + 1)
+
+        clear_button = tk.Button(self.root, text="Clear", font=("times new roman", 30), command = self.cancel_order, fg="black", bg="grey", compound=tk.RIGHT)
+        clear_button.place(x=1400, y=750, height=50, width=100)
                 
     def remove_item(self, item):
         if item in purchaselist:
@@ -162,6 +163,11 @@ class order_UI:
             self.purchase_list()
         else:
             messagebox.showinfo("Error", "Item not found in the purchase list.")
+
+    def cancel_order(self):
+        purchaselist.clear()
+        purchaselistprice.clear()
+        self.purchase_list()
 
     def mouse_scroll(self, event):
         canvas = event.widget
@@ -174,6 +180,7 @@ class order_UI:
         pickupdate = self.pickupdate_entry.get()
         pickuptime = self.pickuptime_entry.get()
 
+        # remove item from inventory
         for item in purchaselist:
             self.inv.remove_item(item, 1)
 
@@ -306,6 +313,7 @@ class order_UI:
                 Kawabunga.quit()
 
         send_emails(email_to) 
+
         for widget in self.root.winfo_children():
             widget.destroy()
         self.customerUI.createMainMenu()

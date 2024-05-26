@@ -22,5 +22,9 @@
     {
         "flower": "G010",
         "revenue": 129.0
+    },
+    {
+        "flower": "B009",
+        "revenue": 189.0
     }
 ]
