@@ -17,6 +17,8 @@ import re
 
 purchaselist = []
 purchaselistprice = []
+# Sample data for the purchase list
+purchase_list = []
 class Order:
     def __init__(self):
         self.inv = Inventory()
@@ -41,26 +43,24 @@ class Order:
         order_confirmation = messagebox.askyesno("Order confirmation", "Are you sure you want to purchase this flower?")
         if order_confirmation:
             messagebox.showinfo("Order Purchase", "Order added to cart.")
-            self.customer.add_purchase((a, price))  # Add the purchase to the customer
         else:
             index = purchaselist.index(a)
             del purchaselistprice[index]
             purchaselist.remove(a)
             messagebox.showinfo("Order Purchase", "Order cancelled.")
-
 class order_UI:
     def __init__(self, root, customer_UI):
         self.root = root
         self.customerUI = customer_UI
+        self.inv = Inventory()
         self.customerDatabase = customerDatabase()
         self.sales_file = 'data/sales.json'
 
     def order_window(self):
-        
         for widget in self.root.winfo_children():
             widget.destroy()
 
-                # Create the main frame
+        # Create the main frame
         main_frame = tk.Frame(self.root)
         main_frame.pack(fill=tk.BOTH, expand=1)
 
@@ -75,48 +75,22 @@ class order_UI:
         canvas.pack(side=tk.RIGHT, fill=tk.BOTH, expand=1)
 
         # Create another frame inside the canvas
-        scrollable_frame = tk.Frame(canvas)
-        scrollable_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=1)
-                # Add a scrollbar to the canvas
+        self.scrollable_frame = tk.Frame(canvas)
+        self.scrollable_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=1)
+        # Add a scrollbar to the canvas
         scrollbar = tk.Scrollbar(main_frame, orient=tk.VERTICAL, command=canvas.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-
-        total_purchase_label = tk.Label(scrollable_frame, text="Total purchase:", font=("times new roman", 25), bg="white", compound=tk.CENTER)
-        total_purchase_label.grid(row=0, column=0)
-
-        total_price = sum(purchaselistprice)
-
-        total_price_label = tk.Label(scrollable_frame, text=f"RM {total_price:.2f}", font=("times new roman", 25), bg="white", compound=tk.CENTER)
-        total_price_label.grid(row=0, column=1)
-
-        # Title just above the table
-        title_label = tk.Label(scrollable_frame, text="Purchase List", font=("times new roman", 40), bg="pink", compound=tk.CENTER)
-        title_label.grid(row=1, column=0)
-
-         # Sample data for the purchase list
-        purchase_list = []
-
-        for item, price in zip(purchaselist, purchaselistprice):
-            price = str(f"{price:.2f}")
-            data = {'flower': item, 'revenue':"RM" + price}
-            purchase_list.append(data)
-
-        # Populate the scrollable frame with the purchase list
-        for i, purchase in enumerate(purchase_list):
-            for j, (key, value) in enumerate(purchase.items()):
-                label = tk.Label(scrollable_frame, text=value, font=20, padx=50, pady=35, relief=tk.RIDGE)
-                label.grid(row=i+5, column=j, sticky="nsew")
-        
-
+        self.purchase_list()
+            
         # Configure the canvas
         canvas.configure(yscrollcommand=scrollbar.set)
         canvas.configure(scrollregion=canvas.bbox("all"))
-        scrollable_frame.bind("<MouseWheel>", self.mouse_scroll)
+        self.scrollable_frame.bind("<MouseWheel>", self.mouse_scroll)
         canvas.bind("<MouseWheel>", self.mouse_scroll)
 
         # Add that new frame to a window in the canvas
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
 
         # Customer registration form
         self.name_label = tk.Label(order_frame, text="Name: ", font=("times new roman", 30))
@@ -145,7 +119,49 @@ class order_UI:
         # Return to main menu
         return_to_main = tk.Button(self.root, text="<-", font=("times new roman", 20), command=self.customerUI.returnToMain, fg="black", bg="grey", compound=tk.LEFT)
         return_to_main.place(x=0, y=0, height=50, width=50)
-        scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.customerUI.onFrameConfigure(canvas))
+        self.scrollable_frame.bind("<Configure>", lambda event, canvas=canvas: self.customerUI.onFrameConfigure(canvas))
+
+
+    def purchase_list(self):
+        for widget in self.scrollable_frame.winfo_children():
+            widget.destroy()
+        total_purchase_label = tk.Label(self.scrollable_frame, text="Total purchase:", font=("times new roman", 25), bg="white", compound=tk.CENTER)
+        total_purchase_label.grid(row=0, column=0)
+
+        total_price = sum(purchaselistprice)
+
+        total_price_label = tk.Label(self.scrollable_frame, text=f"RM {total_price:.2f}", font=("times new roman", 25), bg="white", compound=tk.CENTER)
+        total_price_label.grid(row=0, column=1)
+
+        # Title just above the table
+        title_label = tk.Label(self.scrollable_frame, text="Purchase List", font=("times new roman", 40), bg="pink", compound=tk.CENTER)
+        title_label.grid(row=1, column=0, columnspan=2)
+
+
+        purchase_list.clear()
+        # Populate the scrollable frame with the updated purchase list
+        for item, price in zip(purchaselist, purchaselistprice):
+            price = str(f"{price:.2f}")
+            data = {'flower': item, 'revenue':"RM" + price}
+            purchase_list.append(data)
+
+        # Populate the scrollable frame with the purchase list
+        for i, purchase in enumerate(purchase_list):
+            for j, (key, value) in enumerate(purchase.items()):
+                label = tk.Label(self.scrollable_frame, text=value, font=20, padx=50, pady=35, relief=tk.RIDGE)
+                label.grid(row=i + 1, column=j, sticky="nsew")
+                remove_button = tk.Button(self.scrollable_frame, text="Remove", font=20, bg="light grey", padx=50, pady=35, relief=tk.FLAT, command=lambda f=purchase['flower']: self.remove_item(f))
+                remove_button.grid(row=i + 1, column=j + 1)
+                
+    def remove_item(self, item):
+        if item in purchaselist:
+            index = purchaselist.index(item)
+            del purchaselistprice[index]
+            purchaselist.remove(item)
+            purchase_list.pop(index)
+            self.purchase_list()
+        else:
+            messagebox.showinfo("Error", "Item not found in the purchase list.")
 
     def mouse_scroll(self, event):
         canvas = event.widget
@@ -157,6 +173,9 @@ class order_UI:
         email = self.email_entry.get()   
         pickupdate = self.pickupdate_entry.get()
         pickuptime = self.pickuptime_entry.get()
+
+        for item in purchaselist:
+            self.inv.remove_item(item, 1)
 
         if not re.match (r"^[A-Za-z\s]*$", name):
             messagebox.showerror("Error", "Please enter a valid name with alphabetic characters only.")
@@ -186,7 +205,7 @@ class order_UI:
             return
 
         new_customer = Customer(name, contact, email, pickupdate, pickuptime)
-        new_customer.add_purchase(list(zip(purchaselist, purchaselistprice)))  # Add the purchased flower
+        new_customer.add_purchase(list(zip(purchaselist, purchaselistprice)))
         self.customerDatabase.customer_info.append(new_customer)
         self.customerDatabase.saveCustomerInfo()
         invoice_list = list(zip(purchaselist,purchaselistprice))
@@ -210,8 +229,8 @@ class order_UI:
 
         # Generate unique filename based on current date and time
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        docx_filename = "invoices/newnew_invoice.docx"
-        pdf_filename = f"invoices/newnew_invoice_{timestamp}.pdf"
+        docx_filename = "invoices/invoice.docx"
+        pdf_filename = f"invoices/invoice_{timestamp}.pdf"
 
         doc.save(docx_filename)
         docx2pdf.convert(docx_filename, pdf_filename)
@@ -290,23 +309,6 @@ class order_UI:
         for widget in self.root.winfo_children():
             widget.destroy()
         self.customerUI.createMainMenu()
-
-    def update_purchase_list(self, scrollable_frame):
-        for widget in scrollable_frame.winfo_children():
-            widget.destroy()
-
-        # Populate the scrollable frame with the updated purchase list
-        purchase_list = [{'flower': item, 'revenue': price} for item, price in zip(purchaselist, purchaselistprice)]
-        for i, purchase in enumerate(purchase_list):
-            for j, (key, value) in enumerate(purchase.items()):
-                label = tk.Label(scrollable_frame, text=value, padx=10, pady=5, relief=tk.RIDGE)
-                label.grid(row=i+1, column=j, sticky="nsew")
-
-    def cancel_order(self):
-        purchaselist.clear()
-        purchaselistprice.clear()
-        messagebox.showinfo("Order Cancelled", "Your order has been cancelled.")
-        self.update_purchase_list(self.scrollable_frame)
 
 class Report(Inventory):
     def __init__(self):

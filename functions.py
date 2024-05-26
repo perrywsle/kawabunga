@@ -13,7 +13,6 @@ class Customer:
 
     def add_purchase(self, flower):
         self.purchases.append(flower)
-
 class customerDatabase:
     def __init__(self):
         self.customers = []
@@ -33,13 +32,11 @@ class customerDatabase:
         with open(self.filename, 'w') as f:
             customer_data = [{'name': customer.name, 'contact': customer.contact, 'email': customer.email,'pickupdate':customer.pickupdate, 'pickuptime':customer.pickuptime, 'purchases': customer.purchases} for customer in self.customer_info]
             json.dump(customer_data, f, indent=4)
-
 class Flowers:
     def __init__(self, flower, quantity, price):
         self.flower = flower
         self.quantity = quantity
         self.price = float(price) 
-
 class Inventory:
     def __init__(self):
         self.filename = "data/FlowerInventory.json"
@@ -87,21 +84,11 @@ class Inventory:
                 if item.quantity >= quantity:
                     item.quantity -= quantity
                     self.save_inventory()
-                    messagebox.showinfo("Success", f"{quantity} {flower_name} removed from inventory.")
                     return
                 else:
                     messagebox.showinfo("Error", f"Not enough {flower_name} in inventory.")
                     return
         messagebox.showinfo("Error", f"{flower_name} not found in inventory.")
-
-    def remove_item_customerorder(self, flower_name, quantity):
-        for item in self.inventory:
-            if item.flower == flower_name.upper():
-                if item.quantity >= quantity:
-                    item.quantity -= quantity
-                    self.save_inventory()
-                    return True
-        return False
 
     def delete_item(self, flower_name):
         for item in self.inventory:

@@ -34,33 +34,19 @@ class InventoryWindow(Inventory):
 
     def remove_item(self):
         quantity = int(self.quantity_entry.get())
-        for item in self.inventory:
-            if item.flower == self.selected_item.upper():
-                if item.quantity >= quantity:
-                    item.quantity -= quantity
-                    self.save_inventory()
-                    messagebox.showinfo("Success", f"{quantity} {self.selected_item} removed from inventory.")
-                    self.update_treeview()
-                    self.quantity_entry.delete(0, 'end')
-                    self.popUp.destroy()
-                    return
-        messagebox.showinfo("Error", f"{self.selected_item} not found in inventory.")
+        super().remove_item(self.selected_item, quantity)
+        messagebox.showinfo("Success", f"{quantity} {self.selected_item} removed from inventory.")
+        self.update_treeview()
+        self.quantity_entry.delete(0, 'end')
+        self.popUp.destroy()
 
     def delete_item(self):
         if not self.inventory_tree.selection():
             messagebox.showinfo("No Selection", "Please select an item in the inventory.")
             return
-        for item in self.inventory:
-            if item.flower.lower() == self.selected_item.lower():
-                if item.quantity != 0:
-                    messagebox.showinfo("Item Not Empty", f"The item '{self.selected_item}' still has quantity. Can't delete.")
-                    return
-                self.inventory.remove(item)
-                self.save_inventory()
-                messagebox.showinfo("Success", f"'{self.selected_item}' removed from inventory.")
-                self.update_treeview()
-                return
-        messagebox.showinfo("Error", f"{self.selected_item} not found in inventory.")
+        super().delete_item(self.selected_item)
+        messagebox.showinfo("Success", f"'{self.selected_item}' removed from inventory.")
+        self.update_treeview()
 
     def update_treeview(self):
         for i in self.inventory_tree.get_children():
