@@ -623,7 +623,7 @@ class customer_UI:
         self.admin_name_label.grid(row=0, column=0, padx=10, pady=10)
         self.admin_name_entry = tk.Entry(self.login_popUp, font=("times new roman", 20))
         self.admin_name_entry.grid(row=0, column=1, padx=10, pady=10)
-        self.admin_name_label = tk.Label(self.login_popUp, text="Password", font=("times new roman", 30))
+        self.admin_name_label = tk.Label(self.login_popUp, text="Password", font=("times new roman", 20))
         self.admin_name_label.grid(row=1, column=0, padx=10, pady=10)
         self.admin_password_entry = tk.Entry(self.login_popUp, show="*", font=(80))
         self.admin_password_entry.grid(row=1, column=1, padx=10, pady=10)

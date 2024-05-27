@@ -33,7 +33,7 @@ class Order:
                     if price is None:
                         messagebox.showinfo("Error", f"{a} not found in inventory.")
                         return
-                    purchaselistprice.append(price)
+                    purchaselistprice.append(f"{price:.2f}")
                     break
                 else:
                     messagebox.showinfo("Error", f"Not enough {a} in inventory.")
