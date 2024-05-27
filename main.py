@@ -2,8 +2,8 @@ import subprocess
 import sys
 import pkg_resources
 
-with open('requirements.txt', 'r') as file:
-    packages = file.readlines()
+with open('requirements.txt', 'r') as f:
+    packages = f.readlines()
 
 for package in packages:
     try:
