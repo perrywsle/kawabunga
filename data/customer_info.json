@@ -130,5 +130,50 @@
                 ]
             ]
         ]
+    },
+    {
+        "name": "ertyui",
+        "contact": "0198765432",
+        "email": "perrywsle@gmail.com",
+        "pickupdate": "2345-09-09",
+        "pickuptime": "09:09",
+        "purchases": [
+            [
+                [
+                    "F005",
+                    439.0
+                ]
+            ]
+        ]
+    },
+    {
+        "name": "kksdvuhwdc",
+        "contact": "0187654321",
+        "email": "perrywsle@gmail.com",
+        "pickupdate": "2025-09-09",
+        "pickuptime": "09:09",
+        "purchases": [
+            [
+                [
+                    "F005",
+                    439.0
+                ]
+            ]
+        ]
+    },
+    {
+        "name": "uhdcd",
+        "contact": "0198888888",
+        "email": "perrywsle@gmail.com",
+        "pickupdate": "2345-09-09",
+        "pickuptime": "09:09",
+        "purchases": [
+            [
+                [
+                    "G005",
+                    69.0
+                ]
+            ]
+        ]
     }
 ]

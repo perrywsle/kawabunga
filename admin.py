@@ -45,7 +45,6 @@ class InventoryWindow(Inventory):
             messagebox.showinfo("No Selection", "Please select an item in the inventory.")
             return
         super().delete_item(self.selected_item)
-        messagebox.showinfo("Success", f"'{self.selected_item}' removed from inventory.")
         self.update_treeview()
 
     def update_treeview(self):

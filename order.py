@@ -33,7 +33,7 @@ class Order:
                     if price is None:
                         messagebox.showinfo("Error", f"{a} not found in inventory.")
                         return
-                    purchaselistprice.append(f"{price:.2f}")
+                    purchaselistprice.append(price)
                     break
                 else:
                     messagebox.showinfo("Error", f"Not enough {a} in inventory.")
@@ -210,15 +210,16 @@ class order_UI:
         if not re.match (r"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$", pickuptime):
             messagebox.showerror("Error", "Please enter a valid time using the HH:MM 24-hour format.")
             return
-
+        
+        formatted_list = [f"{num:.2f}" for num in purchaselistprice]
         new_customer = Customer(name, contact, email, pickupdate, pickuptime)
         new_customer.add_purchase(list(zip(purchaselist, purchaselistprice)))
         self.customerDatabase.customer_info.append(new_customer)
         self.customerDatabase.saveCustomerInfo()
-        invoice_list = list(zip(purchaselist,purchaselistprice))
+        invoice_list = list(zip(purchaselist,formatted_list))
 
         #generate receipt
-        doc = DocxTemplate("invoice_template 2.docx")
+        doc = DocxTemplate("invoices/invoice_template 2.docx")
         print (invoice_list)
         total = sum(purchaselistprice)
         totall = f"RM {total:.2f}"
