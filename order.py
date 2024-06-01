@@ -318,7 +318,6 @@ class order_UI:
         for widget in self.root.winfo_children():
             widget.destroy()
         self.customerUI.createMainMenu()
-
 class Report(Inventory):
     def __init__(self):
         super().__init__()
