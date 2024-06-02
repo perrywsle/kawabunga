@@ -147,3 +147,4 @@ class PasswordManager:
         if encrypted_password is None:
             return False
         return self.decrypt_password(encrypted_password) == password
+
